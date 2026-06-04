@@ -1,0 +1,828 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dsign Accounting Workspace — Design Preview</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Kanit:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --brand-50: #f0fdfa;
+        --brand-100: #ccfbf1;
+        --brand-500: #14b8a6;
+        --brand-600: #0d9488;
+        --brand-700: #0f766e;
+      }
+      html,
+      body {
+        font-family: 'Sarabun', system-ui, sans-serif;
+        background: #f8fafc;
+      }
+      .font-heading {
+        font-family: 'Kanit', system-ui, sans-serif;
+      }
+      .brand-bg {
+        background: var(--brand-600);
+      }
+      .brand-text {
+        color: var(--brand-700);
+      }
+      .brand-soft-bg {
+        background: var(--brand-50);
+      }
+      .brand-border {
+        border-color: var(--brand-500);
+      }
+    </style>
+  </head>
+  <body class="text-slate-900">
+    <div id="root"></div>
+    <script type="text/babel" data-type="module">
+      const { useState, useMemo } = React;
+      const screens = [
+        { id: 'landing', label: 'Landing (TH)' },
+        { id: 'dashboard', label: 'Dashboard' },
+        { id: 'new-invoice', label: 'New invoice' },
+        { id: 'invoice-detail', label: 'Invoice detail' },
+        { id: 'pit', label: 'PIT estimator' },
+      ];
+
+      // -------- shared bits --------
+      const fmt = (n) =>
+        new Intl.NumberFormat('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(n);
+
+      function Badge({ children, tone = 'default' }) {
+        const tones = {
+          default: 'bg-slate-100 text-slate-700',
+          success: 'bg-emerald-100 text-emerald-700',
+          warn: 'bg-amber-100 text-amber-700',
+          danger: 'bg-rose-100 text-rose-700',
+          brand: 'brand-soft-bg brand-text',
+          mute: 'bg-slate-100 text-slate-500',
+        };
+        return (
+          <span
+            className={
+              'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ' +
+              (tones[tone] || tones.default)
+            }
+          >
+            {children}
+          </span>
+        );
+      }
+
+      function Card({ title, subtitle, children, className = '' }) {
+        return (
+          <div className={'rounded-xl border border-slate-200 bg-white shadow-sm ' + className}>
+            {(title || subtitle) && (
+              <div className="border-b border-slate-100 p-4">
+                {title && (
+                  <h3 className="font-heading text-base font-semibold">{title}</h3>
+                )}
+                {subtitle && (
+                  <p className="mt-0.5 text-xs text-slate-500">{subtitle}</p>
+                )}
+              </div>
+            )}
+            <div className="p-4">{children}</div>
+          </div>
+        );
+      }
+
+      function Btn({ children, variant = 'primary', size = 'md', className = '', ...p }) {
+        const sizes = { sm: 'h-8 px-3 text-xs', md: 'h-10 px-4 text-sm', lg: 'h-11 px-5' };
+        const variants = {
+          primary: 'brand-bg text-white hover:opacity-90',
+          outline: 'border border-slate-300 bg-white text-slate-800 hover:bg-slate-50',
+          ghost: 'text-slate-700 hover:bg-slate-100',
+          danger: 'bg-rose-600 text-white hover:bg-rose-700',
+        };
+        return (
+          <button
+            {...p}
+            className={
+              'inline-flex items-center justify-center gap-2 rounded-lg font-medium transition disabled:opacity-50 ' +
+              sizes[size] +
+              ' ' +
+              variants[variant] +
+              ' ' +
+              className
+            }
+          >
+            {children}
+          </button>
+        );
+      }
+
+      function Field({ label, hint, children, required }) {
+        return (
+          <label className="block">
+            <div className="mb-1 text-xs font-medium text-slate-700">
+              {label}
+              {required && <span className="ml-0.5 text-rose-500">*</span>}
+            </div>
+            {children}
+            {hint && <div className="mt-1 text-[11px] text-slate-500">{hint}</div>}
+          </label>
+        );
+      }
+
+      function Input(props) {
+        return (
+          <input
+            {...props}
+            className={
+              'h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100 ' +
+              (props.className || '')
+            }
+          />
+        );
+      }
+
+      function Textarea(props) {
+        return (
+          <textarea
+            {...props}
+            className={
+              'min-h-[80px] w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100 ' +
+              (props.className || '')
+            }
+          />
+        );
+      }
+
+      function Icon({ name, size = 16, className = '' }) {
+        const ref = React.useRef(null);
+        React.useEffect(() => {
+          if (ref.current && window.lucide) {
+            ref.current.innerHTML = '';
+            const el = document.createElement('i');
+            el.setAttribute('data-lucide', name);
+            ref.current.appendChild(el);
+            window.lucide.createIcons({ attrs: { width: size, height: size } });
+          }
+        }, [name, size]);
+        return <span ref={ref} className={'inline-flex ' + className} />;
+      }
+
+      // -------- 1. LANDING --------
+      function Landing() {
+        return (
+          <div className="min-h-screen bg-white">
+            <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
+              <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+                <div className="flex items-center gap-2">
+                  <div className="brand-bg flex h-8 w-8 items-center justify-center rounded-md font-heading font-bold text-white">
+                    D
+                  </div>
+                  <span className="font-heading text-lg font-semibold">Dsign Accounting</span>
+                </div>
+                <nav className="hidden gap-7 text-sm text-slate-600 md:flex">
+                  <a className="hover:brand-text">บริการ</a>
+                  <a className="hover:brand-text">เกี่ยวกับเรา</a>
+                  <a className="hover:brand-text">คำถามที่พบบ่อย</a>
+                  <a className="hover:brand-text">ติดต่อ</a>
+                </nav>
+                <div className="flex items-center gap-2">
+                  <Btn variant="outline" size="sm">เข้าสู่ระบบ</Btn>
+                  <Btn size="sm">สมัครสมาชิก</Btn>
+                </div>
+              </div>
+            </header>
+
+            <section className="mx-auto max-w-6xl px-6 pb-20 pt-16 text-center">
+              <a className="brand-soft-bg brand-text mx-auto mb-6 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium">
+                <Icon name="sparkles" size={14} />
+                ✨ Webapp ใหม่: ออกใบเสนอราคา/ใบกำกับภาษีออนไลน์
+                <span className="font-bold">→ เข้าสู่ระบบ</span>
+              </a>
+              <h1 className="font-heading text-4xl font-bold leading-tight md:text-5xl">
+                สำนักงานบัญชีครบวงจร
+                <span className="brand-text"> — Dsign Accounting</span>
+              </h1>
+              <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-600">
+                ผู้เชี่ยวชาญด้านบัญชีและภาษีที่คุณไว้วางใจได้ พร้อมเว็บแอปสำหรับออกใบเสนอราคา
+                ใบกำกับภาษี และหนังสือรับรองหัก ณ ที่จ่าย ในไม่กี่คลิก
+              </p>
+              <div className="mt-7 flex justify-center gap-3">
+                <Btn size="lg">ปรึกษาฟรี</Btn>
+                <Btn variant="outline" size="lg">ดูบริการของเรา</Btn>
+              </div>
+
+              <div className="mx-auto mt-12 grid max-w-3xl grid-cols-2 gap-4 md:grid-cols-4">
+                {[
+                  { v: '10+', l: 'ปีประสบการณ์' },
+                  { v: 'CPA', l: 'ทีมงานรับอนุญาต' },
+                  { v: '200+', l: 'บริษัทที่ดูแล' },
+                  { v: '<24ชม.', l: 'เวลาตอบกลับ' },
+                ].map((t) => (
+                  <div key={t.l} className="rounded-xl border border-slate-200 p-4">
+                    <div className="brand-text font-heading text-2xl font-bold">{t.v}</div>
+                    <div className="text-xs text-slate-500">{t.l}</div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="brand-soft-bg border-y border-teal-100 py-16">
+              <div className="mx-auto max-w-6xl px-6">
+                <h2 className="font-heading text-center text-3xl font-bold">บริการของเรา</h2>
+                <p className="mt-2 text-center text-slate-600">ครอบคลุมทุกความต้องการด้านบัญชีและภาษี</p>
+                <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                  {[
+                    ['BookOpen', 'รับทำบัญชีรายเดือน', 'บันทึกบัญชี ยื่นภาษีรายเดือน พร้อมรายงานสรุป'],
+                    ['FileCheck2', 'ปิดงบการเงินรายปี', 'จัดทำงบการเงินตามมาตรฐาน พร้อมยื่น ภ.ง.ด.50/51'],
+                    ['Lightbulb', 'ที่ปรึกษาภาษีอากร', 'วางแผนภาษีอย่างถูกต้อง ลดความเสี่ยง'],
+                    ['ShieldCheck', 'รับตรวจสอบบัญชี', 'ตรวจสอบโดยผู้สอบบัญชีรับอนุญาต (CPA)'],
+                    ['Settings2', 'วางระบบบัญชี', 'ออกแบบและติดตั้งระบบให้เหมาะกับธุรกิจ'],
+                    ['Building2', 'งานทะเบียน', 'จดทะเบียนบริษัท เปลี่ยนแปลงข้อมูล ขึ้นทะเบียน VAT'],
+                    ['LineChart', 'วางแผนภาษี', 'วิเคราะห์โครงสร้างและออกแบบกลยุทธ์ระยะยาว'],
+                    ['MessageCircle', 'ให้คำปรึกษา', 'ที่ปรึกษาธุรกิจและการเงินจากผู้เชี่ยวชาญ'],
+                  ].map(([icn, t, d]) => (
+                    <div key={t} className="rounded-xl bg-white p-5 shadow-sm">
+                      <div className="brand-soft-bg brand-text mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg">
+                        <Icon name={icn} size={20} />
+                      </div>
+                      <h3 className="font-heading font-semibold">{t}</h3>
+                      <p className="mt-1 text-sm text-slate-600">{d}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            <section className="mx-auto max-w-3xl px-6 py-16">
+              <h2 className="font-heading text-center text-3xl font-bold">คำถามที่พบบ่อย</h2>
+              <div className="mt-8 divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white">
+                {[
+                  ['ค่าบริการทำบัญชีคิดอย่างไร?', 'ขึ้นอยู่กับขนาดธุรกิจและปริมาณเอกสาร เริ่มต้นเดือนละ 2,500 บาท'],
+                  ['VAT คืออะไร ต้องจด VAT เมื่อไร?', 'VAT คือภาษีมูลค่าเพิ่ม 7% บริษัทที่มีรายได้เกิน 1.8 ล้านต่อปี ต้องจดภายใน 30 วัน'],
+                  ['ภาษีหัก ณ ที่จ่ายคืออะไร?', 'ผู้จ่ายเงินต้องหักไว้และนำส่งกรมสรรพากร เช่น ค่าบริการ ค่าเช่า ในอัตรา 1–5%'],
+                  ['ส่งเอกสารให้สำนักงานอย่างไร?', 'กระดาษ ไฟล์ดิจิทัล ไลน์ อีเมล หรือผ่านเว็บแอปของเรา'],
+                ].map(([q, a]) => (
+                  <details key={q} className="group p-5">
+                    <summary className="flex cursor-pointer items-center justify-between font-medium">
+                      <span>{q}</span>
+                      <Icon name="chevron-down" size={18} className="group-open:rotate-180" />
+                    </summary>
+                    <p className="mt-2 text-sm text-slate-600">{a}</p>
+                  </details>
+                ))}
+              </div>
+            </section>
+
+            <footer className="border-t border-slate-200 bg-slate-50 py-10 text-center text-sm text-slate-500">
+              © 2026 Dsign Accounting Co., Ltd. — สำนักงานบัญชีครบวงจร
+            </footer>
+          </div>
+        );
+      }
+
+      // -------- SHELL (sidebar layout used by app screens) --------
+      function AppShell({ active, children }) {
+        const items = [
+          ['LayoutDashboard', 'แดชบอร์ด', 'dashboard'],
+          ['FileText', 'ใบเสนอราคา', 'q'],
+          ['Receipt', 'ใบกำกับภาษี', 'inv'],
+          ['CheckSquare', 'ใบเสร็จรับเงิน', 'rcp'],
+          ['ShieldCheck', 'ภาษีหัก ณ ที่จ่าย', 'wht'],
+          ['Calculator', 'ประมาณการภาษี', 'pit'],
+          ['Users', 'ลูกค้า', 'cust'],
+          ['Package', 'สินค้า/บริการ', 'items'],
+          ['Settings', 'ตั้งค่า', 'settings'],
+        ];
+        return (
+          <div className="min-h-screen bg-slate-50">
+            <aside className="fixed inset-y-0 left-0 hidden w-60 border-r border-slate-200 bg-white px-3 py-4 md:block">
+              <div className="mb-6 flex items-center gap-2 px-2">
+                <div className="brand-bg flex h-8 w-8 items-center justify-center rounded-md font-heading font-bold text-white">D</div>
+                <span className="font-heading font-semibold">Workspace</span>
+              </div>
+              <nav className="space-y-0.5 text-sm">
+                {items.map(([ic, label, key]) => (
+                  <a
+                    key={key}
+                    className={
+                      'flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 ' +
+                      (active === key
+                        ? 'brand-soft-bg brand-text font-medium'
+                        : 'text-slate-700 hover:bg-slate-100')
+                    }
+                  >
+                    <Icon name={ic} size={16} />
+                    {label}
+                  </a>
+                ))}
+              </nav>
+            </aside>
+            <div className="md:pl-60">
+              <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-slate-200 bg-white px-6">
+                <div className="text-sm text-slate-500">ยินดีต้อนรับ, somchai@dsign.co.th</div>
+                <div className="flex items-center gap-2">
+                  <Btn variant="ghost" size="sm"><Icon name="globe" size={14} /> TH</Btn>
+                  <Btn variant="outline" size="sm">ออกจากระบบ</Btn>
+                </div>
+              </header>
+              <main className="p-6">{children}</main>
+            </div>
+          </div>
+        );
+      }
+
+      // -------- 2. DASHBOARD --------
+      function Dashboard() {
+        const trend = [
+          { m: 'ธ.ค.', v: 180000 },
+          { m: 'ม.ค.', v: 245000 },
+          { m: 'ก.พ.', v: 160000 },
+          { m: 'มี.ค.', v: 310000 },
+          { m: 'เม.ย.', v: 280000 },
+          { m: 'พ.ค.', v: 422000 },
+        ];
+        const max = Math.max(...trend.map((t) => t.v), 1);
+        const recent = [
+          ['INV-2026-00042', 'ใบกำกับภาษี', 'บ.อาทิตย์อุทัย จำกัด', 32100, 'issued'],
+          ['Q-2026-00018', 'ใบเสนอราคา', 'คุณสมชาย ใจดี', 18750, 'issued'],
+          ['WHT-2026-00007', 'หนังสือรับรอง WHT', 'หจก.ดวงดี', 1800, 'issued'],
+          ['INV-2026-00041', 'ใบกำกับภาษี', 'บ.ทะเลทราย จำกัด', 96400, 'void'],
+          ['RCP-2026-00022', 'ใบเสร็จรับเงิน', 'บ.อาทิตย์อุทัย จำกัด', 32100, 'issued'],
+        ];
+
+        return (
+          <AppShell active="dashboard">
+            <h1 className="font-heading text-2xl font-bold">แดชบอร์ด</h1>
+            <p className="text-sm text-slate-500">ภาพรวมเอกสารและยอดเงินเดือนนี้</p>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              {[
+                ['ใบกำกับภาษีเดือนนี้', '12', 'รวม ฿422,150.00'],
+                ['VAT ที่เก็บได้', '฿29,550.50', 'จากใบกำกับภาษีไม่ยกเลิก'],
+                ['ภาษีหัก ณ ที่จ่าย', '฿8,460.00', 'หัก ณ ที่จ่ายเดือนนี้'],
+                ['ค้างชำระ', '฿182,900.00', 'รวม 6 ใบ ที่ยังไม่ได้รับเงิน'],
+              ].map(([l, v, s], i) => (
+                <div key={l} className="rounded-xl border border-slate-200 bg-white p-4">
+                  <div className="text-xs text-slate-500">{l}</div>
+                  <div className="brand-text font-heading mt-1 text-2xl font-bold tabular-nums">{v}</div>
+                  <div className="mt-1 text-xs text-slate-400">{s}</div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6 grid gap-4 lg:grid-cols-3">
+              <Card title="แนวโน้มยอดใบกำกับภาษีรายเดือน" subtitle="ย้อนหลัง 6 เดือน" className="lg:col-span-2">
+                <div className="flex h-48 items-end gap-2">
+                  {trend.map((t) => {
+                    const h = Math.max((t.v / max) * 100, 4);
+                    return (
+                      <div key={t.m} className="flex flex-1 flex-col items-center gap-1">
+                        <div className="brand-bg w-full rounded-t-md transition" style={{ height: h + '%' }} title={fmt(t.v)} />
+                        <div className="text-[11px] text-slate-500">{t.m}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </Card>
+
+              <Card title="ลูกค้ายอดเยี่ยมเดือนนี้" subtitle="เรียงตามยอดรวม">
+                <div className="space-y-3">
+                  {[
+                    ['บ.อาทิตย์อุทัย จำกัด', 4, 142800],
+                    ['หจก.ดวงดี', 3, 96000],
+                    ['คุณสมชาย ใจดี', 2, 41250],
+                    ['บ.ทะเลทราย จำกัด', 1, 31200],
+                  ].map(([n, c, v], i) => (
+                    <div key={n} className="flex items-center justify-between">
+                      <div>
+                        <div className="text-sm font-medium">{n}</div>
+                        <div className="text-[11px] text-slate-500">{c} ใบกำกับภาษี</div>
+                      </div>
+                      <div className="brand-text text-sm font-medium tabular-nums">฿{fmt(v)}</div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </div>
+
+            <Card title="เอกสารล่าสุด" subtitle="10 รายการล่าสุด" className="mt-6">
+              <table className="w-full text-sm">
+                <thead className="text-left text-xs text-slate-500">
+                  <tr className="border-b border-slate-100">
+                    <th className="py-2 font-medium">เลขที่</th>
+                    <th className="py-2 font-medium">ประเภท</th>
+                    <th className="py-2 font-medium">ลูกค้า</th>
+                    <th className="py-2 text-right font-medium">มูลค่า</th>
+                    <th className="py-2 font-medium">สถานะ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recent.map(([num, type, cust, val, st]) => (
+                    <tr key={num} className="border-b border-slate-50 last:border-0">
+                      <td className="py-3 font-mono text-xs brand-text font-medium">{num}</td>
+                      <td className="py-3 text-slate-600">{type}</td>
+                      <td className="py-3">{cust}</td>
+                      <td className="py-3 text-right tabular-nums">฿{fmt(val)}</td>
+                      <td className="py-3">
+                        {st === 'void' ? <Badge tone="mute">ยกเลิก</Badge> : <Badge tone="success">ออกแล้ว</Badge>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </Card>
+          </AppShell>
+        );
+      }
+
+      // -------- 3. NEW INVOICE --------
+      function NewInvoice() {
+        const [lines, setLines] = useState([
+          { desc: 'ค่าออกแบบเว็บไซต์ — Landing page', qty: 1, price: 25000, vat: 7 },
+          { desc: 'ค่าดูแลรายเดือน (มี.ค. 2026)', qty: 1, price: 7500, vat: 7 },
+        ]);
+        const [whtRate, setWhtRate] = useState(3);
+
+        const computed = lines.map((l) => ({
+          ...l,
+          lineTotal: l.qty * l.price,
+          vatAmount: (l.qty * l.price * l.vat) / 100,
+        }));
+        const subtotal = computed.reduce((s, l) => s + l.lineTotal, 0);
+        const vatTotal = computed.reduce((s, l) => s + l.vatAmount, 0);
+        const total = subtotal + vatTotal;
+        const wht = (subtotal * whtRate) / 100;
+        const net = total - wht;
+
+        const setLine = (i, k, v) =>
+          setLines(lines.map((l, idx) => (idx === i ? { ...l, [k]: v } : l)));
+        const addLine = () =>
+          setLines([...lines, { desc: '', qty: 1, price: 0, vat: 7 }]);
+        const removeLine = (i) => setLines(lines.filter((_, idx) => idx !== i));
+
+        return (
+          <AppShell active="inv">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="font-heading text-2xl font-bold">ออกใบกำกับภาษีใหม่</h1>
+                <p className="text-sm text-slate-500">เลขที่เอกสารจะถูกสร้างอัตโนมัติเมื่อบันทึก</p>
+              </div>
+              <div className="flex gap-2">
+                <Btn variant="outline">ยกเลิก</Btn>
+                <Btn><Icon name="check" size={14} /> ออกเอกสาร</Btn>
+              </div>
+            </div>
+
+            <div className="mt-6 grid gap-6 lg:grid-cols-3">
+              <div className="space-y-6 lg:col-span-2">
+                <Card title="ข้อมูลพื้นฐาน">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <Field label="ลูกค้า" required>
+                      <select className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm">
+                        <option>บ.อาทิตย์อุทัย จำกัด — TIN 0105536123456</option>
+                        <option>หจก.ดวงดี</option>
+                        <option>คุณสมชาย ใจดี</option>
+                      </select>
+                    </Field>
+                    <Field label="วันที่ออก" required>
+                      <Input type="date" defaultValue="2026-05-30" />
+                    </Field>
+                    <Field label="วันครบกำหนด">
+                      <Input type="date" defaultValue="2026-06-29" />
+                    </Field>
+                    <Field label="หัก ณ ที่จ่าย" hint="คำนวณบนยอดก่อน VAT">
+                      <select className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm" value={whtRate} onChange={(e) => setWhtRate(Number(e.target.value))}>
+                        <option value="0">ไม่หัก</option>
+                        <option value="1">1%</option>
+                        <option value="3">3%</option>
+                        <option value="5">5%</option>
+                      </select>
+                    </Field>
+                  </div>
+                </Card>
+
+                <Card title="รายการ" subtitle="เพิ่มสินค้า/บริการ หรือพิมพ์อิสระต่อบรรทัด">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead className="text-left text-xs text-slate-500">
+                        <tr>
+                          <th className="py-2 font-medium">รายละเอียด</th>
+                          <th className="w-20 py-2 font-medium">จำนวน</th>
+                          <th className="w-32 py-2 font-medium">ราคา/หน่วย</th>
+                          <th className="w-20 py-2 font-medium">VAT %</th>
+                          <th className="w-32 py-2 text-right font-medium">มูลค่า</th>
+                          <th className="w-8"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {computed.map((l, i) => (
+                          <tr key={i} className="border-t border-slate-100">
+                            <td className="py-2 pr-2">
+                              <Input value={l.desc} onChange={(e) => setLine(i, 'desc', e.target.value)} />
+                            </td>
+                            <td className="py-2 pr-2">
+                              <Input type="number" value={l.qty} onChange={(e) => setLine(i, 'qty', Number(e.target.value))} />
+                            </td>
+                            <td className="py-2 pr-2">
+                              <Input type="number" value={l.price} onChange={(e) => setLine(i, 'price', Number(e.target.value))} />
+                            </td>
+                            <td className="py-2 pr-2">
+                              <select className="h-10 w-full rounded-lg border border-slate-300 bg-white px-2 text-sm" value={l.vat} onChange={(e) => setLine(i, 'vat', Number(e.target.value))}>
+                                <option value="0">0</option>
+                                <option value="7">7</option>
+                              </select>
+                            </td>
+                            <td className="py-2 text-right tabular-nums">฿{fmt(l.lineTotal)}</td>
+                            <td className="py-2 text-right">
+                              <button onClick={() => removeLine(i)} className="text-slate-400 hover:text-rose-600">
+                                <Icon name="trash-2" size={14} />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="mt-3 flex gap-2">
+                    <Btn variant="outline" size="sm" onClick={addLine}><Icon name="plus" size={14} /> เพิ่มบรรทัด</Btn>
+                    <Btn variant="ghost" size="sm"><Icon name="package" size={14} /> เลือกจากแคตตาล็อก</Btn>
+                  </div>
+                </Card>
+
+                <Card title="หมายเหตุ">
+                  <Textarea placeholder="โปรดชำระเงินภายในวันที่ครบกำหนด …" />
+                </Card>
+              </div>
+
+              <div className="space-y-4">
+                <Card title="สรุปยอด">
+                  <div className="space-y-2 text-sm">
+                    <Row label="ยอดก่อน VAT" v={subtotal} />
+                    <Row label="VAT 7%" v={vatTotal} />
+                    <Row label="รวม" v={total} bold />
+                    {whtRate > 0 && <Row label={'หัก ณ ที่จ่าย ' + whtRate + '%'} v={-wht} muted />}
+                  </div>
+                  <div className="mt-3 border-t border-slate-100 pt-3">
+                    <div className="flex items-baseline justify-between">
+                      <span className="text-sm font-medium">ยอดสุทธิที่ต้องชำระ</span>
+                      <span className="brand-text font-heading text-2xl font-bold tabular-nums">฿{fmt(net)}</span>
+                    </div>
+                  </div>
+                </Card>
+                <Card title="ตัวอย่าง PDF">
+                  <div className="aspect-[1/1.4] rounded-md border border-dashed border-slate-300 bg-slate-50 p-4 text-xs text-slate-500">
+                    <div className="brand-text mb-1 font-heading text-sm font-semibold">ใบกำกับภาษี / TAX INVOICE</div>
+                    <div>เลขที่: INV-2026-00043</div>
+                    <div className="mt-2">ผู้ขาย: Dsign Accounting Co., Ltd.</div>
+                    <div className="mt-1">ผู้ซื้อ: บ.อาทิตย์อุทัย จำกัด</div>
+                    <div className="mt-3 text-slate-400">— ตัวอย่าง รายละเอียดจะถูกสร้างเมื่อกดออกเอกสาร —</div>
+                  </div>
+                </Card>
+              </div>
+            </div>
+          </AppShell>
+        );
+      }
+
+      function Row({ label, v, bold, muted }) {
+        return (
+          <div className={'flex items-baseline justify-between ' + (muted ? 'text-slate-500' : '')}>
+            <span className={bold ? 'font-medium' : ''}>{label}</span>
+            <span className={'tabular-nums ' + (bold ? 'font-medium' : '')}>
+              {v < 0 ? '-' : ''}฿{fmt(Math.abs(v))}
+            </span>
+          </div>
+        );
+      }
+
+      // -------- 4. INVOICE DETAIL --------
+      function InvoiceDetail() {
+        return (
+          <AppShell active="inv">
+            <div className="flex items-start justify-between">
+              <div>
+                <div className="text-xs text-slate-500">ใบกำกับภาษี</div>
+                <h1 className="font-heading text-2xl font-bold">INV-2026-00042</h1>
+                <div className="mt-1 flex items-center gap-2 text-sm text-slate-600">
+                  <Badge tone="success">ออกแล้ว</Badge>
+                  <span>ออกเมื่อ 28 พ.ค. 2026 · ครบกำหนด 27 มิ.ย. 2026</span>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Btn variant="outline"><Icon name="mail" size={14} /> ส่งให้ลูกค้า</Btn>
+                <Btn><Icon name="download" size={14} /> ดาวน์โหลด PDF</Btn>
+              </div>
+            </div>
+
+            <div className="mt-6 grid gap-6 lg:grid-cols-3">
+              <Card title="ลูกค้า" className="lg:col-span-1">
+                <div className="font-medium">บ.อาทิตย์อุทัย จำกัด</div>
+                <div className="text-xs text-slate-500">TIN 0105536123456 (00000)</div>
+                <div className="mt-2 text-sm text-slate-600 whitespace-pre-line">
+                  121/45 ถนนสุขุมวิท
+                  คลองตัน วัฒนา
+                  กรุงเทพฯ 10110
+                </div>
+                <div className="mt-3 text-sm">
+                  <div>finance@aratrade.co.th</div>
+                  <div className="text-slate-500">02-123-4567</div>
+                </div>
+              </Card>
+
+              <Card title="รายการ" className="lg:col-span-2">
+                <table className="w-full text-sm">
+                  <thead className="text-left text-xs text-slate-500">
+                    <tr className="border-b border-slate-100">
+                      <th className="py-2 font-medium">รายละเอียด</th>
+                      <th className="w-16 py-2 text-right font-medium">จำนวน</th>
+                      <th className="w-28 py-2 text-right font-medium">ราคา/หน่วย</th>
+                      <th className="w-28 py-2 text-right font-medium">มูลค่า</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      ['ค่าออกแบบเว็บไซต์ — Landing page', 1, 25000],
+                      ['ค่าดูแลรายเดือน (มี.ค. 2026)', 1, 7500],
+                    ].map(([d, q, p]) => (
+                      <tr key={d} className="border-b border-slate-50 last:border-0">
+                        <td className="py-3">{d}</td>
+                        <td className="py-3 text-right tabular-nums">{q}</td>
+                        <td className="py-3 text-right tabular-nums">฿{fmt(p)}</td>
+                        <td className="py-3 text-right tabular-nums">฿{fmt(p * q)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                <div className="mt-4 ml-auto max-w-xs space-y-2 text-sm">
+                  <Row label="ยอดก่อน VAT" v={32500} />
+                  <Row label="VAT 7%" v={2275} />
+                  <Row label="รวม" v={34775} bold />
+                  <Row label="หัก ณ ที่จ่าย 3%" v={-975} muted />
+                  <div className="flex items-baseline justify-between border-t border-slate-200 pt-3">
+                    <span className="font-medium">ยอดสุทธิที่ต้องชำระ</span>
+                    <span className="brand-text font-heading text-xl font-bold tabular-nums">฿{fmt(33800)}</span>
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Btn variant="outline" size="sm">ออกใบเสร็จ</Btn>
+              <Btn variant="outline" size="sm">ออกหนังสือรับรอง WHT</Btn>
+              <Btn variant="ghost" size="sm" className="text-rose-600">ยกเลิกเอกสาร</Btn>
+            </div>
+          </AppShell>
+        );
+      }
+
+      // -------- 5. PIT ESTIMATOR --------
+      function Pit() {
+        const [gross, setGross] = useState(800000);
+        const [wht, setWht] = useState(24000);
+        const personal = 60000;
+        const expense = Math.min(gross * 0.5, 100000);
+        const net = Math.max(0, gross - expense - personal);
+        const brackets = [
+          { from: 0, to: 150000, rate: 0 },
+          { from: 150000, to: 300000, rate: 5 },
+          { from: 300000, to: 500000, rate: 10 },
+          { from: 500000, to: 750000, rate: 15 },
+          { from: 750000, to: 1000000, rate: 20 },
+          { from: 1000000, to: 2000000, rate: 25 },
+          { from: 2000000, to: 5000000, rate: 30 },
+          { from: 5000000, to: Infinity, rate: 35 },
+        ];
+        let tax = 0;
+        const rows = [];
+        for (const b of brackets) {
+          if (net <= b.from) break;
+          const top = Math.min(net, b.to);
+          const slice = top - b.from;
+          const t = (slice * b.rate) / 100;
+          tax += t;
+          rows.push({ ...b, slice, t });
+        }
+        const due = tax - wht;
+        const isRefund = due <= 0;
+
+        return (
+          <AppShell active="pit">
+            <h1 className="font-heading text-2xl font-bold">ประมาณการภาษีบุคคลธรรมดา (ภ.ง.ด. 90/91)</h1>
+            <p className="text-sm text-slate-500">เครื่องมือคำนวณ ใช้สำหรับวางแผน ไม่ใช่การยื่นจริง</p>
+
+            <div className="mt-6 grid gap-6 lg:grid-cols-3">
+              <div className="space-y-4 lg:col-span-2">
+                <Card title="ข้อมูลรายได้">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <Field label="รายได้รวมต่อปี (บาท)" required>
+                      <Input type="number" value={gross} onChange={(e) => setGross(Number(e.target.value))} />
+                    </Field>
+                    <Field label="ภาษีหัก ณ ที่จ่ายที่ถูกหักไปแล้ว" hint="ภาษีที่ผู้จ่ายเงินหักนำส่งให้แล้ว">
+                      <Input type="number" value={wht} onChange={(e) => setWht(Number(e.target.value))} />
+                    </Field>
+                  </div>
+                </Card>
+
+                <Card title="ค่าลดหย่อน">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <Field label="ส่วนตัว (อัตโนมัติ)"><Input value="60,000" disabled /></Field>
+                    <Field label="คู่สมรส (สูงสุด 60,000)"><Input placeholder="0" /></Field>
+                    <Field label="บุตร (30,000/คน)"><Input placeholder="0" /></Field>
+                    <Field label="บิดามารดา (30,000/คน, สูงสุด 4)"><Input placeholder="0" /></Field>
+                    <Field label="ประกันสังคม (สูงสุด 9,000)"><Input placeholder="0" /></Field>
+                    <Field label="ประกันชีวิต (สูงสุด 100,000)"><Input placeholder="0" /></Field>
+                  </div>
+                </Card>
+              </div>
+
+              <div className="space-y-4">
+                <Card title="ผลการคำนวณ">
+                  <div className="space-y-2 text-sm">
+                    <Row label="รายได้รวม" v={gross} />
+                    <Row label="หักค่าใช้จ่าย 50%" v={-expense} muted />
+                    <Row label="ลดหย่อนส่วนตัว" v={-personal} muted />
+                    <Row label="เงินได้สุทธิ" v={net} bold />
+                  </div>
+                  <div className="mt-4 space-y-1 text-xs text-slate-600">
+                    {rows.map((r, i) => (
+                      <div key={i} className="flex justify-between">
+                        <span>
+                          ฿{fmt(r.from)} – {r.to === Infinity ? '∞' : '฿' + fmt(r.to)} ({r.rate}%)
+                        </span>
+                        <span className="tabular-nums">฿{fmt(r.t)}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-3 flex items-baseline justify-between border-t border-slate-200 pt-3">
+                    <span className="text-sm font-medium">ภาษีที่ต้องชำระ</span>
+                    <span className="font-heading text-xl font-bold tabular-nums">฿{fmt(tax)}</span>
+                  </div>
+                  <div className="mt-2 flex items-baseline justify-between">
+                    <span className={'text-sm font-medium ' + (isRefund ? 'text-emerald-700' : 'text-rose-700')}>
+                      {isRefund ? 'ขอคืน' : 'ชำระเพิ่ม'}
+                    </span>
+                    <span className={'font-heading text-xl font-bold tabular-nums ' + (isRefund ? 'text-emerald-700' : 'text-rose-700')}>
+                      ฿{fmt(Math.abs(due))}
+                    </span>
+                  </div>
+                </Card>
+                <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">
+                  <Icon name="info" size={14} /> เครื่องมือนี้ใช้สำหรับวางแผนภาษีเบื้องต้นเท่านั้น โปรดตรวจสอบกับ ภ.ง.ด. 90 ฉบับปัจจุบันก่อนยื่นจริง
+                </div>
+              </div>
+            </div>
+          </AppShell>
+        );
+      }
+
+      // -------- ROOT --------
+      function App() {
+        const [screen, setScreen] = useState('landing');
+        return (
+          <div>
+            <div className="sticky top-0 z-50 border-b border-slate-200 bg-slate-900 text-white">
+              <div className="mx-auto flex max-w-6xl items-center gap-2 px-4 py-2 text-xs">
+                <span className="brand-soft-bg brand-text rounded-full px-2 py-0.5 font-medium">PREVIEW</span>
+                <span className="text-slate-300">Dsign Accounting Workspace — overall design preview · {' '}</span>
+                <div className="ml-auto flex flex-wrap gap-1">
+                  {screens.map((s) => (
+                    <button
+                      key={s.id}
+                      onClick={() => setScreen(s.id)}
+                      className={
+                        'rounded-md px-2 py-1 text-xs ' +
+                        (screen === s.id ? 'bg-white text-slate-900' : 'text-slate-300 hover:bg-slate-800')
+                      }
+                    >
+                      {s.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            {screen === 'landing' && <Landing />}
+            {screen === 'dashboard' && <Dashboard />}
+            {screen === 'new-invoice' && <NewInvoice />}
+            {screen === 'invoice-detail' && <InvoiceDetail />}
+            {screen === 'pit' && <Pit />}
+          </div>
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+  </body>
+</html>
