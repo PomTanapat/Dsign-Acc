@@ -31,7 +31,7 @@ even tell people not to incorporate when it isn't right for them.
 | Phase | Doc | Scope |
 |---|---|---|
 | 6 | [specs/phase-6-expense-capture.md](specs/phase-6-expense-capture.md) | Snap supplier receipts → real money-in/out data |
-| 7 | [specs/phase-7-guidance-onboarding.md](specs/phase-7-guidance-onboarding.md) | **Highest priority** — guidance modes, plain-language explainers, industry onboarding |
+| 7 | [specs/phase-7-guidance-onboarding.md](specs/phase-7-guidance-onboarding.md) | **Highest priority** — guidance modes, plain-language explainers, industry onboarding · [build prompt + file list](specs/phase-7-build-prompt.md) |
 | 8 | [specs/phase-8-accountant-backoffice.md](specs/phase-8-accountant-backoffice.md) | Internal cross-client cockpit + honest upsell triggers |
 | 9 | [specs/phase-9-money-health.md](specs/phase-9-money-health.md) | Plain-language "money health" + tax set-aside |
 | 10 | [specs/phase-10-should-i-incorporate.md](specs/phase-10-should-i-incorporate.md) | 6-driver incorporation **assessment** (not a tax calculator) |
