@@ -33,28 +33,31 @@ This is **the bridge** between Entry A (solo users on the free tool) and Entry B
 
 ---
 
-## 1A. The four reasons to incorporate (the diagnostic core)
+## 1A. The six reasons to incorporate (the diagnostic core)
 
-From real experience, founders incorporate for four reasons — and **tax is often
-not the trigger.** The tool opens with a short diagnostic that detects which
-driver(s) apply, then tailors the result.
+From real experience, founders incorporate for six reasons — and **tax is rarely
+the trigger.** The tool opens with a short diagnostic that detects which driver(s)
+apply, then tailors the result. Lead with the protection & credibility drivers.
 
-| # | Driver | Diagnostic question | If yes → |
+| Group | Driver | Diagnostic question | If yes → |
 |---|---|---|---|
-| 1 | **ภาษี — Tax** | "Roughly how much profit per year?" | Run the tax module (§4); show ฿ saving |
-| 2 | **หุ้นส่วน — Partners** | "Do you have, or are you bringing on, business partners?" | Explain shareholding/dividends/limited liability; strong incorporate signal |
-| 3 | **ความน่าเชื่อถือ — B2B trust** | "Are your clients companies or government? Have you lost work for not being a company?" | Explain vendor/contract credibility; strong, emotional signal |
-| 4 | **กู้เงิน / ขยาย — Financing & growth** | "Do you want a business loan, investors, or to expand soon?" | Explain audited-statements → credit; highest-value lead |
+| 🛡 | **Limited liability** | "Does your business take on contracts, debts, or risks where you'd want to protect your personal assets?" | Explain separate legal person / asset protection; strong signal |
+| 🛡 | **Asset management** | "Do you want to hold or pass on assets (property, investments) through a business?" | Explain holding/succession via shares; strong signal |
+| 📈 | **B2B credibility** | "Are your clients companies or government? Lost work for not being a company?" | Explain vendor/contract credibility; emotional signal |
+| 📈 | **Financing / growth** | "Want a loan, investors, or to expand soon?" | Explain audited statements → credit; highest-value lead |
+| 🤝 | **Partners** | "Do you have / are you bringing on business partners?" | Explain shareholding/dividends/liability; strong signal |
+| 🧮 | **Tax** | "Roughly how much profit per year?" | Run the tax module (§4); show ฿ saving |
 
 **Output logic:**
-- Any of #2/#3/#4 = yes → "Incorporating likely makes sense for you because
-  [drivers], regardless of the tax math." (qualitative-first)
-- #1 tax module → shows the ฿ number as supporting evidence, not the gate.
+- Any **qualitative driver** = yes → "Incorporating likely makes sense for you
+  because [drivers], regardless of the tax math." (qualitative-first)
+- The **tax module** shows the ฿ number as supporting evidence, **not** the gate.
 - Combine into one tailored recommendation + CTA.
 
-> A tax-only tool would tell a credibility-driven founder "not worth it, you'd
-> save ฿8k" and lose a hot lead. The diagnostic prevents that — the tax number
-> never blocks a recommendation that the *other* drivers justify.
+> A tax-only tool would tell a liability- or credibility-driven founder "not
+> worth it, you'd only save ฿8k" and lose a hot lead. The diagnostic prevents
+> that — the tax number never blocks a recommendation the *other* five drivers
+> justify.
 
 ---
 

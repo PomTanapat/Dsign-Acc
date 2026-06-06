@@ -97,22 +97,24 @@ advisor — for years.
 > registers them — and we've lost a client we never even met. *"If we do it
 > later, the customer is already stuck with another accounting firm."*
 
-### Why founders actually incorporate — four drivers (not just tax)
-From real experience, tax is only *one* reason — and often not the deciding one.
-The four real drivers:
+### Why founders actually incorporate — six drivers (tax is only one)
+From real experience, founders incorporate for six reasons — and **tax is rarely
+the trigger.** The five non-tax drivers are the emotionally compelling ones.
 
-| Driver | Trigger | What a company solves | Quantifiable |
-|---|---|---|---|
-| **1. ภาษี — Tax** | Profit high enough that personal rates (→35%) beat corporate (15–20%) + dividend | Lower effective tax; salary/dividend split; more deductions | ✅ (calculator) |
-| **2. หุ้นส่วน — Partners** | A 2nd/3rd person joins the business | Shareholding %, dividends by share, clear roles, limited liability — not all income/risk on one person's tax ID | ⚠️ qualitative |
-| **3. ความน่าเชื่อถือ — B2B trust** | Clients are companies/government that won't buy from an individual | Vendor onboarding, contracts, tax-invoice flow, permanence — stops losing deals to "companies only" | ⚠️ qualitative |
-| **4. กู้เงิน / ขยาย — Financing & growth** | Wants a loan, investors, or to scale | Audited statements → bank credit; raise capital; business credit separate from personal | ⚠️ qualitative |
+| Group | Driver | Trigger | What a company solves | Quantifiable |
+|---|---|---|---|---|
+| 🛡 Protect | **Limited liability (risk)** | Business takes on contracts, debt, staff, lawsuit risk | Separate legal person — shields personal assets (house, savings) if things go wrong | ⚠️ qualitative |
+| 🛡 Protect | **Asset management / succession** | Accumulated property/investments to hold or pass on | Hold assets in the company; pass on *shares* not re-titled assets; split personal vs business wealth | ⚠️ qualitative |
+| 📈 Grow | **B2B credibility** | Clients/government won't deal with an individual | Vendor onboarding, contracts, permanence — stop losing deals to "companies only" | ⚠️ qualitative |
+| 📈 Grow | **Financing & expansion** | Wants a loan, investors, or to scale | Audited statements → bank credit; raise capital; business credit separate from personal | ⚠️ qualitative |
+| 🤝 Structure | **Partners / revenue-sharing** | A 2nd/3rd owner joins | Shareholding %, dividends, roles, liability — not all income/risk on one tax ID | ⚠️ qualitative |
+| 🧮 Optimize | **Tax** | Profit high enough that corporate (15–20%) + dividend beats personal (→35%) | Lower effective tax; salary/dividend split; more deductions | ✅ (calculator) |
 
 > **Implication:** the "Should I incorporate?" tool must be a **multi-driver
-> assessment**, not a tax calculator. A tax-only tool converts only Driver 1 and
-> loses the partner/credibility/loan-driven founders — who are often the ones
-> actually ready to incorporate. The marketing "benefits of a company" content
-> should be organized around these four drivers too.
+> assessment led by the protection & credibility drivers**, not a tax calculator.
+> A tax-only tool converts only the tax driver and loses the (more common)
+> liability-, asset-, partner-, credibility-, and loan-driven founders. The
+> marketing "benefits of a company" content should be organized around all six.
 
 ### One funnel, two entry points, one bridge
 - **Entry A — already operating** (freelancer, seller, café): free guided tool → grows → upsell.
