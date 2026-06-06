@@ -82,6 +82,56 @@ relevant upsell → paid service → trust → higher packages & consulting.
 
 ---
 
+## 3A. The incorporation wedge — catch founders before formation
+
+**The highest-leverage acquisition moment isn't when someone is already
+operating — it's the moment they decide to open a company.** In Thailand,
+forming a บริษัทจำกัด legally requires a CPD/accountant relationship plus a
+bureaucratic DBD (Department of Business Development) process. Whoever walks a
+founder through that almost always becomes their bookkeeper, auditor, and
+advisor — for years.
+
+> **The chokepoint insight:** Company formation is where the lifetime
+> relationship is decided. If we are not the easy, trustworthy option at "I want
+> to open a company," the founder gets locked to whichever firm or lawyer
+> registers them — and we've lost a client we never even met. *"If we do it
+> later, the customer is already stuck with another accounting firm."*
+
+### One funnel, two entry points, one bridge
+- **Entry A — already operating** (freelancer, seller, café): free guided tool → grows → upsell.
+- **Entry B — founder-to-be** *(new, higher value)*: high intent, no firm yet → formation service → **company client from day zero**.
+- **The bridge — a "Should I incorporate?" comparison tool**: turns a grown
+  Entry-A user into Entry B at the right moment, *and* works as standalone
+  top-of-funnel lead-gen. It extends the already-built PIT estimator.
+
+### The productized formation service
+1. **Educate & qualify** — "Sole proprietor vs company" benefits/comparison + the calculator. Qualifies the lead while helping them.
+2. **Intake** — clean digital form (name choices, objectives, shareholders, capital, address) + document upload.
+3. **Confirm** — a Dsign person reviews and discusses to confirm everything. Trust + error-catching.
+4. **Pay** — service fee + government fees, transparently.
+5. **Execute** — Dsign does the DBD registration, VAT registration if needed, assigns CPD/CPA.
+6. **Auto-onboard** — the new company drops straight into the workspace → issues documents → bookkeeping begins. *They never touch another firm.*
+
+### Why a company client is worth 5–10× a solo user
+A registered company must (by law) do far more than an individual — every line
+is recurring Dsign revenue: monthly VAT (ภ.พ.30), WHT remittance (ภ.ง.ด.3/53),
+**mandatory bookkeeping (CPD)**, **mandatory annual audit (CPA)**, corporate
+income tax (ภ.ง.ด.51 half-year + ภ.ง.ด.50 annual), DBD financial statements,
+payroll & social security.
+
+> The comparison tool can be honest *and* self-serving: *"As a company you'd
+> save ฿X in tax but it costs ฿Y in compliance — net ฿Z."* Dsign is the ฿Y.
+> (Since 2023 a private company needs only **2 shareholders** — a lower barrier
+> worth highlighting.)
+
+> **Tax framing for the comparison tool** (verify with the team each year):
+> personal income tax is progressive up to 35%; SME corporate tax is 0% on the
+> first ฿300k net profit, 15% to ฿3M, 20% above. There's a crossover income
+> where incorporating wins on tax — that crossover is the tool's punchline and
+> the formation-service trigger.
+
+---
+
 ## 4. User groups (3 actors)
 
 | Group | Who | Mindset | Needs |
@@ -264,6 +314,8 @@ not the same intimidating everything.
 | 2 | Expense capture | **Yes — lightweight (snap receipts)** | Makes the bookkeeping bridge real; new build scope (§12) |
 | 3 | Free / paid line | **Free tool, paid service** | Maximize acquisition; revenue from bookkeeping/filing/consulting |
 | 4 | Industry tailoring | **Tailor per industry** | Onboarding interview + feature gating per segment |
+| 5 | Incorporation wedge | **Adopted — formation as top-of-funnel** | New entry point B + bridge tool + productized formation service (§3A) |
+| 6 | Foreigner-owned formation | **PENDING** (see §13) | Thai-national only is far simpler; foreign-owned (BOI/FBL/work permits) is higher value but much more complex |
 
 ---
 
@@ -281,11 +333,16 @@ basic firm-side dashboard stats. *This is the document-issuance FRONT.*
 | **Phase 7 — Adaptive guidance + industry onboarding** | Guided vs Fast modes; inline plain-language explainers on every tax field; glossary; onboarding interview that gates features per industry | Decisions #4; Group 1 vs 2; the "fear" barrier |
 | **Phase 8 — Accountant back-office + triggers** | Internal cross-client activity view; data completeness flags; VAT-threshold watch; life-event upsell triggers; "request this service" handoff | Decisions #1, #3; the monetization engine |
 | **Phase 9 — Plain-language money health** | Demystified financial summary for the user (not accounting jargon); "what you owe / what's coming back" | Trust; Group 1 |
+| **Phase 10 — "Should I incorporate?" comparison tool** | Individual-vs-company tax + compliance-cost comparison; the bridge from Entry A → B. Extends the built PIT estimator (cheap to build). | Decision #5; funnel bridge |
+| **Phase 11 — Formation service** | Productized intake (name/shareholders/capital/docs) → human confirm → pay → DBD execution → auto-onboard. Operational + workflow build. | Decision #5; Entry B; the chokepoint |
 
-> **Sequencing logic:** Phase 7 (guidance + onboarding) is arguably the highest
-> priority — it's what makes the *current* built features usable by a scared
-> beginner at all. Phase 6 (expenses) is what makes the *service* sellable.
-> Phase 8 turns the data into money. A reasonable order is **7 → 6 → 8 → 9**.
+> **Sequencing logic:** Phase 7 (guidance + onboarding) is still the highest
+> priority — it makes the *current* features usable by a scared beginner at all.
+> Phase 6 (expenses) makes the *service* sellable. **Phase 10 (the comparison
+> tool) is a cheap, high-leverage early win** — it extends the built PIT
+> estimator and opens the incorporation funnel without the full service build.
+> Phase 11 (formation service) is the bigger operational lift that captures
+> Entry B. A reasonable order is **7 → 10 → 6 → 8 → 11 → 9**.
 
 ---
 
@@ -301,6 +358,14 @@ basic firm-side dashboard stats. *This is the document-issuance FRONT.*
   without rework — confirm the data shape with the accounting team.
 - **Verify the tax specifics each season** — VAT threshold, WHT rates, PIT
   brackets, deduction caps against the current year's forms.
+- **Foreigner-owned formation scope** — Thai-national companies only (simple),
+  or also foreign-owned (BOI, Foreign Business License, work permits — higher
+  value, much more complex, competes with law firms)?
+- **Formation service pricing & fulfillment** — flat service fee + pass-through
+  government fees? How much is self-serve intake vs human-handled? Who does the
+  DBD filing operationally?
+- **Comparison-tool honesty guardrails** — it gives tax guidance; needs a clear
+  "estimate, not advice — confirm with us" disclaimer like the PIT estimator.
 
 ---
 
