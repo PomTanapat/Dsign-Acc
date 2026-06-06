@@ -52,7 +52,12 @@ apply, then tailors the result. Lead with the protection & credibility drivers.
 - Any **qualitative driver** = yes → "Incorporating likely makes sense for you
   because [drivers], regardless of the tax math." (qualitative-first)
 - The **tax module** shows the ฿ number as supporting evidence, **not** the gate.
-- Combine into one tailored recommendation + CTA.
+- **If nothing favors it → say so honestly:** "Stay an individual for now — it's
+  simpler and cheaper for you. We'll tell you when that changes." No push. This
+  willingness to recommend *against* is the trust principle (STRATEGY §3A).
+- Always surface the **full ongoing cost** of being a company (bookkeeping +
+  audit + filing), so the choice is eyes-open — never just the upside.
+- Combine into one tailored, honest recommendation + (only if warranted) CTA.
 
 > A tax-only tool would tell a liability- or credibility-driven founder "not
 > worth it, you'd only save ฿8k" and lose a hot lead. The diagnostic prevents

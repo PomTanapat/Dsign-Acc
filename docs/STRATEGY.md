@@ -123,6 +123,17 @@ the trigger.** The five non-tax drivers are the emotionally compelling ones.
   Entry-A user into Entry B at the right moment, *and* works as standalone
   top-of-funnel lead-gen. It extends the already-built PIT estimator.
 
+### Guiding principle: honest advice, not a hard sell
+**We do not sell company formation.** We assess honestly whether incorporating is
+best for the person — and we are willing to say *"no, stay an individual for now,
+save your money."* When it genuinely is best, we recommend it **with the full cost
+shown on day one** — one-time fees *and* the recurring compliance cost most firms
+hide until after you've signed. Honest and clear, no pressure.
+
+> For a trust-based wedge, this *is* the business model: being willing to talk
+> someone out of the sale is what earns the lifetime service relationship. The
+> day-one cost transparency is the concrete proof of that honesty.
+
 ### The productized formation service
 1. **Educate & qualify** — "Sole proprietor vs company" benefits/comparison + the calculator. Qualifies the lead while helping them.
 2. **Intake** — clean digital form (name choices, objectives, shareholders, capital, address) + document upload.
