@@ -3,9 +3,13 @@
 > **Status:** Spec / ready to build · **Depends on:** the built PIT bracket engine
 > (`src/lib/tax/pit-brackets.ts`) · **Strategy ref:** `STRATEGY.md` §3A, Decision #5
 >
-> **One line:** A calculator that shows a solo entrepreneur, in plain Thai,
-> whether becoming a company would save them money — and turns a "yes" into a
-> lead for the formation service.
+> **One line:** A plain-Thai *assessment* that tells a solo entrepreneur whether
+> becoming a company makes sense **for their situation** — across tax, partners,
+> credibility, and financing — and turns a "yes" into a formation-service lead.
+>
+> **Important reframe:** this is **not** a tax calculator. Tax is only one of
+> four reasons people incorporate (see §1A) and often not the deciding one. The
+> tool is a multi-driver *fit assessment*; the tax math is one module inside it.
 
 ---
 
@@ -29,6 +33,33 @@ This is **the bridge** between Entry A (solo users on the free tool) and Entry B
 
 ---
 
+## 1A. The four reasons to incorporate (the diagnostic core)
+
+From real experience, founders incorporate for four reasons — and **tax is often
+not the trigger.** The tool opens with a short diagnostic that detects which
+driver(s) apply, then tailors the result.
+
+| # | Driver | Diagnostic question | If yes → |
+|---|---|---|---|
+| 1 | **ภาษี — Tax** | "Roughly how much profit per year?" | Run the tax module (§4); show ฿ saving |
+| 2 | **หุ้นส่วน — Partners** | "Do you have, or are you bringing on, business partners?" | Explain shareholding/dividends/limited liability; strong incorporate signal |
+| 3 | **ความน่าเชื่อถือ — B2B trust** | "Are your clients companies or government? Have you lost work for not being a company?" | Explain vendor/contract credibility; strong, emotional signal |
+| 4 | **กู้เงิน / ขยาย — Financing & growth** | "Do you want a business loan, investors, or to expand soon?" | Explain audited-statements → credit; highest-value lead |
+
+**Output logic:**
+- Any of #2/#3/#4 = yes → "Incorporating likely makes sense for you because
+  [drivers], regardless of the tax math." (qualitative-first)
+- #1 tax module → shows the ฿ number as supporting evidence, not the gate.
+- Combine into one tailored recommendation + CTA.
+
+> A tax-only tool would tell a credibility-driven founder "not worth it, you'd
+> save ฿8k" and lose a hot lead. The diagnostic prevents that — the tax number
+> never blocks a recommendation that the *other* drivers justify.
+
+---
+
+---
+
 ## 2. Users & entry points
 
 | Entry point | Context | Mode default |
@@ -47,7 +78,11 @@ highest-intent entry — it fires at the exact moment incorporation starts to pa
 
 Keep it short. Beginners abandon long forms.
 
-**Simple mode (default — 3 inputs):**
+**Step 1 — Driver diagnostic (4 quick yes/no + 1 number)** — the §1A questions:
+partners? client type / lost deals? loan or expansion? + profit. This decides
+the recommendation *and* which tax inputs to ask for.
+
+**Step 2 — Tax inputs (only the profit-relevant ones):**
 | Field | Notes |
 |---|---|
 | Annual revenue (รายได้ต่อปี) | Pre-fill from tracked data if available |
@@ -133,7 +168,19 @@ high earner (company wins), plus the dividend-vs-salary edge.
 
 ## 5. Results UI
 
-A side-by-side that a scared beginner can read at a glance:
+**Lead with the drivers, then the math.** First a "why this fits you" summary of
+the qualitative drivers that applied (partners / credibility / financing), each
+with a one-line plain-language reason. *Then* the tax side-by-side as the hard
+number underneath.
+
+```
+✓ ทำไมการเป็นบริษัทเหมาะกับคุณ / Why incorporating fits you
+  • คุณมีหุ้นส่วน — บริษัทช่วยแบ่งหุ้น/ปันผล/ความรับผิดอย่างชัดเจน
+  • ลูกค้าของคุณเป็นบริษัท — เพิ่มความน่าเชื่อถือ ไม่เสียดีลอีกต่อไป
+  • และด้านภาษี: (see below)
+```
+
+Then the tax module — a side-by-side a scared beginner can read at a glance:
 
 ```
 ┌──────────────────────────┐   ┌──────────────────────────┐

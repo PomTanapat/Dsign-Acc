@@ -97,6 +97,23 @@ advisor — for years.
 > registers them — and we've lost a client we never even met. *"If we do it
 > later, the customer is already stuck with another accounting firm."*
 
+### Why founders actually incorporate — four drivers (not just tax)
+From real experience, tax is only *one* reason — and often not the deciding one.
+The four real drivers:
+
+| Driver | Trigger | What a company solves | Quantifiable |
+|---|---|---|---|
+| **1. ภาษี — Tax** | Profit high enough that personal rates (→35%) beat corporate (15–20%) + dividend | Lower effective tax; salary/dividend split; more deductions | ✅ (calculator) |
+| **2. หุ้นส่วน — Partners** | A 2nd/3rd person joins the business | Shareholding %, dividends by share, clear roles, limited liability — not all income/risk on one person's tax ID | ⚠️ qualitative |
+| **3. ความน่าเชื่อถือ — B2B trust** | Clients are companies/government that won't buy from an individual | Vendor onboarding, contracts, tax-invoice flow, permanence — stops losing deals to "companies only" | ⚠️ qualitative |
+| **4. กู้เงิน / ขยาย — Financing & growth** | Wants a loan, investors, or to scale | Audited statements → bank credit; raise capital; business credit separate from personal | ⚠️ qualitative |
+
+> **Implication:** the "Should I incorporate?" tool must be a **multi-driver
+> assessment**, not a tax calculator. A tax-only tool converts only Driver 1 and
+> loses the partner/credibility/loan-driven founders — who are often the ones
+> actually ready to incorporate. The marketing "benefits of a company" content
+> should be organized around these four drivers too.
+
 ### One funnel, two entry points, one bridge
 - **Entry A — already operating** (freelancer, seller, café): free guided tool → grows → upsell.
 - **Entry B — founder-to-be** *(new, higher value)*: high intent, no firm yet → formation service → **company client from day zero**.
