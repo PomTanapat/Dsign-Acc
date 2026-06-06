@@ -315,7 +315,7 @@ not the same intimidating everything.
 | 3 | Free / paid line | **Free tool, paid service** | Maximize acquisition; revenue from bookkeeping/filing/consulting |
 | 4 | Industry tailoring | **Tailor per industry** | Onboarding interview + feature gating per segment |
 | 5 | Incorporation wedge | **Adopted — formation as top-of-funnel** | New entry point B + bridge tool + productized formation service (§3A) |
-| 6 | Foreigner-owned formation | **PENDING** (see §13) | Thai-national only is far simpler; foreign-owned (BOI/FBL/work permits) is higher value but much more complex |
+| 6 | Foreigner-owned formation | **Yes — cover foreign-owned too** | Two formation tracks: **Thai-national** (simple, high-volume, self-serve intake) + **foreign-owned** (BOI / Foreign Business License / work permits / ~฿2M-per-permit capital — premium, specialist + expert-in-the-loop, partner with a law firm where needed). Higher value, more complex |
 
 ---
 
@@ -358,9 +358,10 @@ basic firm-side dashboard stats. *This is the document-issuance FRONT.*
   without rework — confirm the data shape with the accounting team.
 - **Verify the tax specifics each season** — VAT threshold, WHT rates, PIT
   brackets, deduction caps against the current year's forms.
-- **Foreigner-owned formation scope** — Thai-national companies only (simple),
-  or also foreign-owned (BOI, Foreign Business License, work permits — higher
-  value, much more complex, competes with law firms)?
+- **Foreign-owned formation track** *(decided: in scope — see Decision #6)* —
+  open sub-questions: which structures we handle in-house vs partner with a law
+  firm (BOI, Foreign Business License); is foreign-owned a separate premium
+  intake; route foreign leads straight to a human specialist (not self-serve)?
 - **Formation service pricing & fulfillment** — flat service fee + pass-through
   government fees? How much is self-serve intake vs human-handled? Who does the
   DBD filing operationally?
@@ -369,6 +370,7 @@ basic firm-side dashboard stats. *This is the document-issuance FRONT.*
 
 ---
 
-*Strategy is locked on the four key forks. The build so far is the front-end of
-the front; Phases 6–9 above are what turn it into the wedge-and-service engine
-this strategy describes.*
+*Strategy is locked on six key forks (§11). The build so far is the front-end of
+the front; Phases 6–11 above are what turn it into the wedge-and-service engine
+this strategy describes — from catching founders at incorporation, through the
+free guided tool, to the recurring accounting service.*
