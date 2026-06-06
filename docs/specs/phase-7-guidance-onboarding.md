@@ -59,6 +59,14 @@ tailored dashboard with a "here's what to do first" card.
 Extend the existing company-setup redirect: if `onboardingCompletedAt` is null,
 any `(app)` route → `/onboarding`. (Reuses the Phase-1 gate pattern.)
 
+### Foreign-owner branch
+A "Are you / your shareholders Thai nationals?" question routes foreign owners to
+an **English-first** flavor with extra Thai-tax context (corporate tax, VAT, WHT,
+work-permit-linked obligations, dividend WHT). The guidance glossary gains a
+dedicated "Thai tax for foreign owners" section. Full treatment in
+`specs/foreign-owner-context.md`. This is a distinct, underserved, high-value
+persona (Group 4) — not an edge case.
+
 ---
 
 ## 4. Pillar B — adaptive guidance modes

@@ -162,13 +162,14 @@ payroll & social security.
 
 ---
 
-## 4. User groups (3 actors)
+## 4. User groups (4 actors)
 
 | Group | Who | Mindset | Needs |
 |---|---|---|---|
 | **1. Solo — No-knowledge** *(primary)* | Beginner; never studied tax | **Afraid** — "I don't want to get fined" | Guidance, plain language, safety, proactive nudges |
 | **2. Solo/Admin — Confident** *(secondary)* | Knows basics, or admin for an owner | **Impatient** — "just let me issue it" | Speed, density, keyboard, no hand-holding |
 | **3. Dsign accountant — back office** *(the engine)* | Internal team consuming client data | **Buried in manual entry & doc-chasing** | Clean structured data, deadline visibility, upsell signals |
+| **4. Foreign owner** *(underserved, high-value)* | Expat running a Thai company | **Lost in Thai tax**; burned by Thai-only tools | English-first; **enough Thai tax context to stay compliant**; a specialist when it gets complex → see `specs/foreign-owner-context.md` |
 
 Groups 1 and 3 are **two ends of one pipe**: a plain-language invoice issued by
 Group 1 arrives as a categorized transaction for Group 3, with zero re-keying.
