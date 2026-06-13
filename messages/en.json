@@ -246,6 +246,31 @@
     "onboardingBanner": "Set up your company info to start issuing documents.",
     "savedSuccess": "Saved successfully.",
     "savedError": "Save failed. Please try again.",
+    "profileSection": {
+      "title": "Business profile",
+      "sub": "Edit what you told us at the start — the sidebar and dashboard re-tailor to match.",
+      "industry": "Industry",
+      "vatStatus": "VAT status",
+      "vatYes": "Registered (7%)",
+      "vatNo": "Not registered",
+      "vatUnsure": "Not sure",
+      "vatRateHint": "Your VAT status decides whether VAT is on; the default VAT rate below only applies when it is.",
+      "paysOthers": "Pays others",
+      "paysYes": "Yes — staff, freelancers, or rent",
+      "paysNo": "No, just me",
+      "save": "Save profile",
+      "saved": "Profile updated — the app re-tailored to match."
+    },
+    "guidanceSection": {
+      "title": "Guidance mode",
+      "guidedTitle": "Guided — with help",
+      "guidedDesc": "Plain-language help on every tax term stays open, with safe defaults and a confirm step before anything with tax impact. Best for beginners.",
+      "fastTitle": "Fast — minimal",
+      "fastDesc": "Help is hidden (hover to see), forms are lean and keyboard-first, no confirm dialogs. Best for experienced users.",
+      "suggestFast": "You seem comfortable — turn guides off to work faster?",
+      "suggestYes": "Switch to Fast",
+      "suggestNo": "Keep Guided"
+    },
     "fields": {
       "nameTh": "Company name (Thai)",
       "nameEn": "Company name (English)",
@@ -365,6 +390,19 @@
     "empty": "No receipts yet — create your first."
   },
   "DocumentForm": {
+    "vatOffNote": "You're not VAT-registered, so VAT is off — the safe, correct default.",
+    "vatOffNoteUnsure": "We're not sure you're VAT-registered yet, so VAT is off — the safe default. We can help you check.",
+    "whtHidden": "Your business doesn't issue withholding certificates, so we've hidden them.",
+    "whtServiceHint": "Company clients sometimes withhold ~3% on services — if that happens, record it here so your net amount is right.",
+    "confirm": {
+      "title": "Confirm before issuing",
+      "vat": "This document charges 7% VAT ({amt}) — only correct if you're VAT-registered.",
+      "wht": "Your customer will withhold {amt}. You'll actually receive {net}.",
+      "running": "The running number will be fixed and can't be reused.",
+      "suggestFast": "Comfortable with these checks? Switch to Fast mode in Settings to skip them.",
+      "cancel": "Cancel",
+      "confirm": "Confirm & issue"
+    },
     "customer": "Customer",
     "customerPlaceholder": "Select a customer",
     "issueDate": "Issue date",
@@ -389,6 +427,11 @@
     "errors": {
       "customerRequired": "Please choose a customer.",
       "noLines": "Add at least one line item.",
+      "validation": "Please check the form for errors.",
+      "customerNotFound": "That customer no longer exists — pick another.",
+      "noCompany": "Set up your company first.",
+      "companyIncomplete": "Complete your company details in Settings before issuing documents.",
+      "vatNotRegistered": "Your profile says you're not VAT-registered, so this document can't charge VAT — issuing it wouldn't be legal. Registered? Update your VAT status in Settings. Not sure? Talk to us — it's free.",
       "generic": "Something went wrong. Please try again."
     }
   },
@@ -627,6 +670,21 @@
     "sub": "Plain-language explanations for every term you'll meet",
     "draftBanner": "All explanations are draft copy, pending review by a Dsign accountant for accuracy before they ship.",
     "foreignSection": "Thai tax for foreign owners"
+  },
+  "Nudges": {
+    "dismiss": "Dismiss",
+    "vatThreshold": {
+      "title": "You're getting close to the VAT threshold",
+      "body": "Your sales over the last 12 months are {amount} — about {remaining} from ฿1.8M. Once you pass it, you must register for VAT within 30 days. (Based on the documents you issue in Dsign.)",
+      "barLabel": "{amount} / ฿1.8M",
+      "cta": "Have us register your VAT",
+      "learn": "What is the VAT threshold?"
+    },
+    "whtInfo": {
+      "title": "Got a withholding-tax slip from a client?",
+      "body": "When company clients pay you, they often withhold ~3% and give you a certificate (50 ทวิ). That money isn't lost — you claim it back when you file. Keep every slip.",
+      "dismiss": "Got it"
+    }
   },
   "Onboarding": {
     "aside": {
