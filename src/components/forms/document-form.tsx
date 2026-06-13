@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { useForm, useFieldArray, type Resolver } from "react-hook-form";
-import { Plus, Trash2 } from "lucide-react";
+import { Hash, Percent, Plus, Scissors, ShieldCheck, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,22 +11,49 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Explainer } from "@/components/guidance/explainer";
+import { useGuidance } from "@/components/guidance/guidance-provider";
 import { useRouter } from "@/i18n/routing";
 import { createDocument } from "@/app/actions/documents";
 import { calculateDocument } from "@/lib/documents/calc";
-import type { DocType, Customer, Item } from "@/lib/db/schema";
+import { industryConfig } from "@/lib/guidance/industry-config";
+import type { DocType, Customer, Industry, Item } from "@/lib/db/schema";
 
 type Props = {
   type: DocType;
   customers: Customer[];
   items: Item[];
+  /** Company VAT registration status — drives the safe VAT default (plan D11). */
+  vatRegistered?: "yes" | "no" | "unsure";
+  /** Company industry key — drives the WHT auto-suggest / hint (plan D11). */
+  industry?: string;
 };
+
+// Service-natured industries get the 3% WHT auto-suggest on invoices.
+const SERVICE_INDUSTRIES: readonly string[] = ["freelance", "prof", "contractor"];
+
+// Server error keys we have translations for under DocumentForm.errors.*
+const KNOWN_SERVER_ERRORS: readonly string[] = [
+  "validation",
+  "customerNotFound",
+  "noCompany",
+  "companyIncomplete",
+  "vatNotRegistered",
+  "generic",
+];
 
 // All-string form shape — HTML inputs only know strings. We convert at
 // submit time. Keeping it stringy also lets us show empty inputs cleanly
@@ -63,14 +90,14 @@ function plusDaysIso(iso: string, days: number): string {
   return d.toISOString().slice(0, 10);
 }
 
-function emptyLine(): LineFormShape {
+function emptyLine(defaultVatRate: string): LineFormShape {
   return {
     itemId: null,
     description: "",
     quantity: "1",
     unitPrice: "0.00",
     discountPercent: "0",
-    vatRate: "7",
+    vatRate: defaultVatRate,
   };
 }
 
@@ -86,13 +113,25 @@ function fmt(n: number): string {
   });
 }
 
-export function DocumentForm({ type, customers, items }: Props) {
+export function DocumentForm({
+  type,
+  customers,
+  items,
+  vatRegistered = "unsure",
+  industry = "other",
+}: Props) {
   const t = useTranslations("DocumentForm");
   const tCommon = useTranslations("Common");
   const tDoc = useTranslations("Documents");
   const router = useRouter();
+  const { mode } = useGuidance();
   const [pending, startTransition] = useTransition();
   const [formError, setFormError] = useState<string | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
+  // Safe VAT default (plan D11): only charge 7% when we KNOW the company is
+  // VAT-registered. "no"/"unsure" both start at 0%.
+  const defaultVatRate = vatRegistered === "yes" ? "7" : "0";
 
   // useFieldArray on a stringy shape is fine — react-hook-form doesn't
   // try to validate types until the resolver runs (we don't pass one;
@@ -104,7 +143,7 @@ export function DocumentForm({ type, customers, items }: Props) {
       dueDate: type === "invoice" ? plusDaysIso(todayIso(), 30) : "",
       whtRate: "0",
       notes: "",
-      lines: [emptyLine()],
+      lines: [emptyLine(defaultVatRate)],
     },
     // No zod resolver here — server action is the source of truth.
     resolver: undefined as unknown as Resolver<FormShape>,
@@ -114,6 +153,7 @@ export function DocumentForm({ type, customers, items }: Props) {
 
   const watchedLines = watch("lines");
   const watchedWht = watch("whtRate");
+  const watchedCustomerId = watch("customerId");
 
   // Live totals — recompute on every render. Cheap for handful of lines.
   const liveTotals = useMemo(() => {
@@ -130,6 +170,33 @@ export function DocumentForm({ type, customers, items }: Props) {
     return calculateDocument(parsed, whtRate || null);
   }, [watchedLines, watchedWht]);
 
+  const selectedCustomer = customers.find((c) => c.id === watchedCustomerId);
+  const isServiceIndustry = SERVICE_INDUSTRIES.includes(industry);
+  const cfg = industryConfig(industry as Industry);
+
+  // WHT auto-suggest (plan D11): service-natured industries invoicing a
+  // juristic customer get 3% pre-selected ONCE. The ref makes it a
+  // suggestion, never an override — after the first apply (or whatever the
+  // user does next) we stay hands-off.
+  const whtSuggestedRef = useRef(false);
+  useEffect(() => {
+    if (type !== "invoice" || !isServiceIndustry) return;
+    if (whtSuggestedRef.current) return;
+    if (!selectedCustomer?.isJuristic) return;
+    if (getValues("whtRate") !== "0") return;
+    whtSuggestedRef.current = true;
+    setValue("whtRate", "3");
+  }, [type, isServiceIndustry, selectedCustomer, getValues, setValue]);
+
+  // Passive hint for non-issuing industries: their juristic clients may
+  // still withhold on services.
+  const showWhtServiceHint =
+    type === "invoice" && !cfg.showWhtIssuing && !!selectedCustomer?.isJuristic;
+
+  // Safe-default note: shown while VAT is off everywhere and the company
+  // isn't (confirmed) VAT-registered.
+  const anyLineHasVat = watchedLines.some((l) => num(l.vatRate) > 0);
+
   function addFromItem(itemId: string) {
     const it = items.find((x) => x.id === itemId);
     if (!it) return;
@@ -139,22 +206,12 @@ export function DocumentForm({ type, customers, items }: Props) {
       quantity: "1",
       unitPrice: it.unitPrice,
       discountPercent: "0",
-      vatRate: it.vatApplicable ? "7" : "0",
+      vatRate: vatRegistered === "yes" && it.vatApplicable ? "7" : "0",
     });
   }
 
-  const onSubmit = handleSubmit(() => {
-    setFormError(null);
+  function doSubmit() {
     const v = getValues();
-    if (!v.customerId) {
-      setFormError(t("errors.customerRequired"));
-      return;
-    }
-    if (v.lines.length === 0) {
-      setFormError(t("errors.noLines"));
-      return;
-    }
-
     const payload = {
       type,
       customerId: v.customerId,
@@ -178,9 +235,40 @@ export function DocumentForm({ type, customers, items }: Props) {
       if (res.success && res.data) {
         router.push(`/${type}s/${res.data.documentId}`);
       } else {
-        setFormError(res.success ? "generic" : res.error || "generic");
+        // Map known server error keys to translations; never show raw keys.
+        const key = res.success ? "generic" : res.error;
+        setFormError(
+          key && KNOWN_SERVER_ERRORS.includes(key)
+            ? t(`errors.${key}`)
+            : t("errors.generic"),
+        );
       }
     });
+  }
+
+  const onSubmit = handleSubmit(() => {
+    setFormError(null);
+    const v = getValues();
+    if (!v.customerId) {
+      setFormError(t("errors.customerRequired"));
+      return;
+    }
+    if (v.lines.length === 0) {
+      setFormError(t("errors.noLines"));
+      return;
+    }
+
+    // Confirm-before-issue (plan D10): in guided mode, a document that
+    // charges VAT or has WHT gets one explicit confirmation first.
+    if (
+      mode === "guided" &&
+      (liveTotals.totals.vatAmount > 0 || liveTotals.totals.whtAmount > 0)
+    ) {
+      setConfirmOpen(true);
+      return;
+    }
+
+    doSubmit();
   });
 
   return (
@@ -244,7 +332,7 @@ export function DocumentForm({ type, customers, items }: Props) {
             <Button
               type="button"
               variant="outline"
-              onClick={() => append(emptyLine())}
+              onClick={() => append(emptyLine(defaultVatRate))}
             >
               <Plus className="h-4 w-4" />
               <span className="ml-2">{t("addFreeText")}</span>
@@ -325,6 +413,16 @@ export function DocumentForm({ type, customers, items }: Props) {
             })
           )}
         </div>
+
+        {/* Compact so it never fights the narrow VAT column above. */}
+        <Explainer term="vat" compact />
+
+        {vatRegistered !== "yes" && !anyLineHasVat ? (
+          <p className="flex items-start gap-1.5 text-xs text-muted-foreground">
+            <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-success" />
+            {vatRegistered === "no" ? t("vatOffNote") : t("vatOffNoteUnsure")}
+          </p>
+        ) : null}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -346,6 +444,12 @@ export function DocumentForm({ type, customers, items }: Props) {
                   <SelectItem value="5">5%</SelectItem>
                 </SelectContent>
               </Select>
+              {showWhtServiceHint ? (
+                <p className="text-xs text-muted-foreground">
+                  {t("whtServiceHint")}
+                </p>
+              ) : null}
+              <Explainer term="whtReceived" />
             </div>
           ) : null}
 
@@ -380,6 +484,7 @@ export function DocumentForm({ type, customers, items }: Props) {
             <span>{tDoc("netPayable")}</span>
             <span className="tabular-nums">{fmt(liveTotals.totals.netPayable)}</span>
           </div>
+          <Explainer term="netPayable" compact />
         </div>
       </div>
 
@@ -388,6 +493,65 @@ export function DocumentForm({ type, customers, items }: Props) {
           {pending ? tCommon("saving") : t("issue")}
         </Button>
       </div>
+
+      {/* Confirm-before-issue (plan D10) — guided mode only, opened from
+          onSubmit when the document charges VAT or has WHT. */}
+      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("confirm.title")}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 text-sm">
+            {liveTotals.totals.vatAmount > 0 ? (
+              <div className="flex items-start gap-2">
+                <Percent className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                <span>
+                  {t("confirm.vat", {
+                    amt: `฿${fmt(liveTotals.totals.vatAmount)}`,
+                  })}
+                </span>
+              </div>
+            ) : null}
+            {liveTotals.totals.whtAmount > 0 ? (
+              <div className="flex items-start gap-2">
+                <Scissors className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                <span>
+                  {t("confirm.wht", {
+                    amt: `฿${fmt(liveTotals.totals.whtAmount)}`,
+                    net: `฿${fmt(liveTotals.totals.netPayable)}`,
+                  })}
+                </span>
+              </div>
+            ) : null}
+            <div className="flex items-start gap-2 text-muted-foreground">
+              <Hash className="mt-0.5 h-4 w-4 shrink-0" />
+              <span>{t("confirm.running")}</span>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {t("confirm.suggestFast")}
+            </p>
+          </div>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setConfirmOpen(false)}
+            >
+              {t("confirm.cancel")}
+            </Button>
+            <Button
+              type="button"
+              disabled={pending}
+              onClick={() => {
+                setConfirmOpen(false);
+                doSubmit();
+              }}
+            >
+              {t("confirm.confirm")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </form>
   );
 }
