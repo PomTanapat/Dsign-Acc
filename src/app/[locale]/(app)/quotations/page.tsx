@@ -1,9 +1,8 @@
-import { redirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 
 import { DocumentsClient } from "@/components/app/documents-client";
 import { getDocuments } from "@/app/actions/documents";
-import { requireCompany } from "@/lib/queries/company";
+import { requireOnboarded } from "@/lib/queries/company";
 
 export default async function Page({
   params,
@@ -12,8 +11,7 @@ export default async function Page({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const { company } = await requireCompany();
-  if (!company) redirect(`/${locale}/settings?onboarding=1`);
+  await requireOnboarded(locale);
 
   const docs = await getDocuments("quotation");
   return <DocumentsClient type="quotation" documents={docs} />;
