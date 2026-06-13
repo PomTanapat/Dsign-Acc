@@ -2,7 +2,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CompanyForm } from "@/components/forms/company-form";
-import { requireCompany } from "@/lib/queries/company";
+import { requireOnboarded } from "@/lib/queries/company";
 
 export default async function Page({
   params,
@@ -13,11 +13,13 @@ export default async function Page({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const { company } = await requireOnboarded(locale);
   const t = await getTranslations("Settings");
 
-  const { company } = await requireCompany();
   const { onboarding } = await searchParams;
-  const showOnboardingBanner = onboarding === "1" || company === null;
+  // requireOnboarded guarantees a company row, so the banner is driven by the
+  // ?onboarding=1 flag alone (legal-completion nudge from the issuing pages).
+  const showOnboardingBanner = onboarding === "1";
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
