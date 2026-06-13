@@ -231,7 +231,9 @@ export function WhtForm({ customers, prefill, locale }: Props) {
           "noCompany",
           "validation",
         ] as const;
-        const key = res.error as (typeof known)[number] | undefined;
+        const key = res.success
+          ? undefined
+          : (res.error as (typeof known)[number] | undefined);
         setFormError(
           key && (known as readonly string[]).includes(key)
             ? t(`errors.${key}`)
