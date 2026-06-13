@@ -47,3 +47,46 @@ export async function requireCompanyOrFail(): Promise<{
   }
   return { userId, company };
 }
+
+// -------------------- Phase 7: two orthogonal gates --------------------
+//
+// "Onboarded" (interview finished) and "legal-complete" (company legal
+// details present) are independent axes: onboarding finishes before legal
+// details exist, and a backfilled pre-Phase-7 company is legal-complete
+// without ever seeing the wizard. The workspace gate uses the first; only
+// document issuance requires the second.
+
+/** A company whose legal fields are present — safe to issue documents. */
+export type LegalCompleteCompany = Company & {
+  nameTh: string;
+  tin: string;
+  addressTh: string;
+};
+
+export function isOnboarded(company: Company | null): company is Company {
+  return Boolean(company?.onboardingCompletedAt);
+}
+
+export function isLegalComplete(
+  company: Company | null,
+): company is LegalCompleteCompany {
+  return Boolean(company?.nameTh && company?.tin && company?.addressTh);
+}
+
+/**
+ * Workspace gate: redirects to the onboarding wizard until the interview
+ * has been completed (or skipped — skip also stamps the timestamp).
+ *
+ * NOTE: pages still use the legacy company-row gate until the wizard route
+ * ships; the flip to this helper happens atomically with that deploy.
+ */
+export async function requireOnboarded(locale: string): Promise<{
+  userId: string;
+  company: Company;
+}> {
+  const { userId, company } = await requireCompany();
+  if (!company || !isOnboarded(company)) {
+    redirect(`/${locale}/onboarding`);
+  }
+  return { userId, company };
+}
