@@ -1,5 +1,6 @@
 import "server-only";
 
+import { cache } from "react";
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 
@@ -14,24 +15,30 @@ import { companies, type Company } from "@/lib/db/schema";
  *
  * Redirects to the login page when there is no session — this is a server
  * helper, so calling it from a page or action is safe.
+ *
+ * Wrapped in React cache(): the (app) layout and the page both need the
+ * company on every request (guidance mode, gates), so the lookup is
+ * memoized per request instead of hitting Postgres twice.
  */
-export async function requireCompany(): Promise<{
-  userId: string;
-  company: Company | null;
-}> {
-  const session = await auth();
-  const userId = session?.user?.id;
-  if (!userId) {
-    redirect("/login");
-  }
+export const requireCompany = cache(
+  async (): Promise<{
+    userId: string;
+    company: Company | null;
+  }> => {
+    const session = await auth();
+    const userId = session?.user?.id;
+    if (!userId) {
+      redirect("/login");
+    }
 
-  const company =
-    (await db.query.companies.findFirst({
-      where: eq(companies.userId, userId),
-    })) ?? null;
+    const company =
+      (await db.query.companies.findFirst({
+        where: eq(companies.userId, userId),
+      })) ?? null;
 
-  return { userId, company };
-}
+    return { userId, company };
+  },
+);
 
 /**
  * Like `requireCompany` but throws when there is no company. Useful inside
