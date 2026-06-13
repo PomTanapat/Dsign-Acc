@@ -23,7 +23,13 @@ export default async function Page({
   return (
     <div className="space-y-4">
       <h1 className="font-heading text-2xl font-semibold">{t("newTitle")}</h1>
-      <DocumentForm type="receipt" customers={customers} items={items} />
+      <DocumentForm
+        type="receipt"
+        customers={customers}
+        items={items}
+        vatRegistered={company.vatRegistered}
+        industry={company.industry}
+      />
     </div>
   );
 }
