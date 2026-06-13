@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Explainer } from "@/components/guidance/explainer";
 import { saveCompany } from "@/app/actions/company";
 import { companySchema } from "@/lib/validation/company";
 import type { Company } from "@/lib/db/schema";
@@ -141,6 +142,7 @@ export function CompanyForm({ initialValues }: Props) {
           hint={tCommon("hintDigits", { count: 13 })}
         >
           <Input id="tin" inputMode="numeric" {...form.register("tin")} />
+          <Explainer term="tin" compact />
         </Field>
         <Field
           id="branchCode"
@@ -153,6 +155,7 @@ export function CompanyForm({ initialValues }: Props) {
             inputMode="numeric"
             {...form.register("branchCode")}
           />
+          <Explainer term="branch" compact />
         </Field>
       </div>
 
@@ -218,6 +221,7 @@ export function CompanyForm({ initialValues }: Props) {
             step="0.01"
             {...form.register("defaultVatRate")}
           />
+          <Explainer term="vat" compact />
         </Field>
         <Field
           id="defaultCurrency"
