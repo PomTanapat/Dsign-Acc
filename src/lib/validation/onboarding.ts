@@ -4,7 +4,7 @@ import { z } from "zod";
 // questions (Next stays disabled), so failures here mean a tampered or
 // stale-draft payload — error keys, not prose.
 
-const industryEnum = z.enum([
+export const industryEnum = z.enum([
   "freelance",
   "online",
   "food",
@@ -14,6 +14,17 @@ const industryEnum = z.enum([
   "salon",
   "other",
 ]);
+
+// Settings → Business profile (Step 4) — the editable slice of the
+// onboarding profile; changing it re-tailors the shell live.
+export const businessProfileSchema = z.object({
+  industry: industryEnum,
+  vatRegistered: z.enum(["yes", "no", "unsure"]),
+  paysOthers: z.enum(["yes", "no", "unsure"]),
+  guidanceMode: z.enum(["guided", "fast"]),
+});
+
+export type BusinessProfileInput = z.infer<typeof businessProfileSchema>;
 
 const driverEnum = z.enum([
   "corpClients",
