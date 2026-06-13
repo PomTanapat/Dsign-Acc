@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { auth } from "@/lib/auth";
+import { requireOnboarded } from "@/lib/queries/company";
 import {
   Card,
   CardContent,
@@ -72,6 +73,7 @@ export default async function DashboardPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  await requireOnboarded(locale);
 
   const session = await auth();
   const t = await getTranslations("App.dashboard");
