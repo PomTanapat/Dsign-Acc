@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Explainer } from "@/components/guidance/explainer";
 import { useRouter } from "@/i18n/routing";
 import { createWhtCertificate } from "@/app/actions/wht";
 import { calculateWhtLine, calculateWhtTotals } from "@/lib/documents/wht-calc";
@@ -271,6 +272,7 @@ export function WhtForm({ customers, prefill, locale }: Props) {
               ))}
             </SelectContent>
           </Select>
+          <Explainer term="juristic" compact />
         </div>
 
         <div className="space-y-1.5">
@@ -304,6 +306,7 @@ export function WhtForm({ customers, prefill, locale }: Props) {
               {t("formTypePnd53")}
             </label>
           </div>
+          <Explainer term="whtIssued" />
         </div>
       </div>
 
