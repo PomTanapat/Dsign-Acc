@@ -3,6 +3,7 @@ import { setRequestLocale } from "next-intl/server";
 import { DocumentsClient } from "@/components/app/documents-client";
 import { getDocuments } from "@/app/actions/documents";
 import { requireOnboarded } from "@/lib/queries/company";
+import { industryConfig } from "@/lib/guidance/industry-config";
 
 export default async function Page({
   params,
@@ -11,8 +12,12 @@ export default async function Page({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  await requireOnboarded(locale);
+  const { company } = await requireOnboarded(locale);
 
   const docs = await getDocuments("receipt");
-  return <DocumentsClient type="receipt" documents={docs} />;
+  const isPrimary =
+    industryConfig(company.industry).primaryDocType === "receipt";
+  return (
+    <DocumentsClient type="receipt" documents={docs} isPrimary={isPrimary} />
+  );
 }
