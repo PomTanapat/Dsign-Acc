@@ -151,10 +151,18 @@
       "customers": "Customers",
       "items": "Items",
       "glossary": "Tax glossary",
-      "settings": "Settings"
+      "settings": "Settings",
+      "mainBadge": "main",
+      "groups": {
+        "documents": "Documents",
+        "tools": "Tools",
+        "data": "Data",
+        "guidance": "Guidance"
+      }
     },
     "topbar": {
-      "signOut": "Sign out"
+      "signOut": "Sign out",
+      "tailoredFor": "Tailored for {industry}"
     },
     "dashboard": {
       "welcome": "Welcome",
@@ -172,7 +180,30 @@
       "topCustomersSubtitle": "By total invoice value this calendar month.",
       "topCustomersEmpty": "No invoices this month yet.",
       "type": "Type",
-      "invoiceCount": "Invoices"
+      "invoiceCount": "Invoices",
+      "kpiSales": "Sales this month",
+      "kpiCollected": "Collected this month",
+      "kpiOpenQuotations": "Open quotations",
+      "kpiOpenQuotationsSub": "Awaiting response",
+      "kpiDocuments": "Documents this month",
+      "newDoc": "New {doc}",
+      "docNames": {
+        "quotation": "quotation",
+        "invoice": "tax invoice",
+        "receipt": "receipt"
+      },
+      "firstTask": {
+        "title": "Start here",
+        "sub": "The first things worth doing",
+        "step1": "Issue your first {doc}",
+        "step1Sub": "It takes under a minute",
+        "step2": "Add your first customer",
+        "step2Sub": "Save a buyer's details to reuse",
+        "step3": "Complete your business profile",
+        "step3Sub": "Name, address & tax ID on documents",
+        "start": "Start",
+        "done": "Done"
+      }
     },
     "placeholder": {
       "comingSoon": "This feature is in development.",
@@ -261,6 +292,7 @@
     }
   },
   "Documents": {
+    "emptyPrimaryHint": "This is your main document type — your first one takes under a minute.",
     "types": {
       "quotation": "Quotation",
       "invoice": "Tax invoice",
