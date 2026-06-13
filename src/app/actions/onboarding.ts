@@ -7,7 +7,10 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { companies, leadEvents } from "@/lib/db/schema";
 import { buildTeaser } from "@/lib/guidance/incorporation-teaser";
-import { onboardingInputSchema } from "@/lib/validation/onboarding";
+import {
+  businessProfileSchema,
+  onboardingInputSchema,
+} from "@/lib/validation/onboarding";
 
 export type ActionResult<T = void> =
   | { success: true; data?: T }
@@ -81,6 +84,30 @@ export async function completeOnboarding(input: unknown): Promise<ActionResult> 
   }
 
   // Re-tailors the shell (guidance mode, sidebar, dashboard) everywhere.
+  revalidatePath("/", "layout");
+  return { success: true };
+}
+
+/**
+ * Settings → Business profile: the editable slice of the onboarding
+ * answers. Saving re-tailors the sidebar, dashboard, and form defaults on
+ * the next render (revalidatePath busts the layout).
+ */
+export async function updateBusinessProfile(
+  input: unknown,
+): Promise<ActionResult> {
+  const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId) return { success: false, error: "unauthorized" };
+
+  const parsed = businessProfileSchema.safeParse(input);
+  if (!parsed.success) return { success: false, error: "validation" };
+
+  await db
+    .update(companies)
+    .set({ ...parsed.data, updatedAt: new Date() })
+    .where(eq(companies.userId, userId));
+
   revalidatePath("/", "layout");
   return { success: true };
 }
