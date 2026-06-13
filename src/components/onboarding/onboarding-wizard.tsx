@@ -260,6 +260,7 @@ export function OnboardingWizard() {
             return (
               <li
                 key={step.id}
+                aria-current={cur ? "step" : undefined}
                 className={cn(
                   "flex items-center gap-2.5 rounded-md px-2 py-1.5 text-[13px]",
                   cur ? "bg-white/15 font-medium" : "text-white/65",
@@ -312,9 +313,16 @@ export function OnboardingWizard() {
               </span>
             ) : null}
           </div>
-          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted">
+          <div
+            role="progressbar"
+            aria-valuemin={1}
+            aria-valuemax={total}
+            aria-valuenow={idx + 1}
+            aria-label={t("progress.counter", { current: idx + 1, total })}
+            className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted"
+          >
             <div
-              className="h-full rounded-full bg-primary transition-all duration-300"
+              className="h-full rounded-full bg-primary transition-all duration-300 motion-reduce:transition-none"
               style={{ width: `${((idx + 1) / total) * 100}%` }}
             />
           </div>
@@ -355,10 +363,10 @@ export function OnboardingWizard() {
                     onClick={() => choose(val)}
                     aria-pressed={selected}
                     className={cn(
-                      "flex w-full items-center gap-3 rounded-lg border bg-card p-3.5 text-left transition-all",
+                      "flex w-full items-center gap-3 rounded-lg border bg-card p-3.5 text-left transition-all motion-reduce:transition-none",
                       selected
                         ? "border-primary bg-info-soft shadow-sm"
-                        : "hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-sm",
+                        : "hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-sm motion-reduce:hover:translate-y-0",
                     )}
                   >
                     <span
