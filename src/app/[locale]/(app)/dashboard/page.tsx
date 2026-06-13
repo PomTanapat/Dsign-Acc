@@ -1,7 +1,10 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Plus } from "lucide-react";
 
 import { auth } from "@/lib/auth";
-import { requireOnboarded } from "@/lib/queries/company";
+import { isLegalComplete, requireOnboarded } from "@/lib/queries/company";
+import { industryConfig } from "@/lib/guidance/industry-config";
+import { FirstTaskCard } from "@/components/app/first-task-card";
 import {
   Card,
   CardContent,
@@ -23,7 +26,9 @@ import {
   getDashboardStats,
   getMonthlyInvoiceTrend,
   getRecentDocuments,
+  getTailoredStats,
   getTopCustomersThisMonth,
+  getWorkspaceCounts,
 } from "@/lib/queries/dashboard";
 import type { DocType } from "@/lib/db/schema";
 
@@ -73,52 +78,107 @@ export default async function DashboardPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  await requireOnboarded(locale);
+  const { company } = await requireOnboarded(locale);
 
   const session = await auth();
   const t = await getTranslations("App.dashboard");
   const tDoc = await getTranslations("Documents");
-  const [stats, recent, topCustomers, trend] = await Promise.all([
-    getDashboardStats(),
-    getRecentDocuments(10),
-    getTopCustomersThisMonth(5),
-    getMonthlyInvoiceTrend(6),
-  ]);
+  const [stats, tailored, counts, recent, topCustomers, trend] =
+    await Promise.all([
+      getDashboardStats(),
+      getTailoredStats(),
+      getWorkspaceCounts(),
+      getRecentDocuments(10),
+      getTopCustomersThisMonth(5),
+      getMonthlyInvoiceTrend(6),
+    ]);
+
+  const cfg = industryConfig(company.industry);
+
+  // KPI 1 follows the industry's emphasis; KPI 3 swaps between WHT-received
+  // tracking and VAT depending on the profile (Pillar C). Every figure is a
+  // real aggregate — receipt-primary industries read receipts, not the
+  // invoice-only stats that would show them ฿0.
+  const emphasisCard =
+    cfg.dashboardEmphasis === "billing"
+      ? {
+          key: "kpiCollected",
+          primary: fmtMoney(tailored.receiptsCollectedThisMonth),
+          secondary: "THB",
+        }
+      : cfg.dashboardEmphasis === "projects"
+        ? {
+            key: "kpiOpenQuotations",
+            primary: fmtInt(tailored.openQuotations),
+            secondary: t("kpiOpenQuotationsSub"),
+          }
+        : {
+            key: "kpiSales",
+            primary: fmtMoney(stats.invoicesTotal),
+            secondary: "THB",
+          };
+
+  const taxCard = cfg.showWhtIssuing
+    ? {
+        key: "whtWithheld",
+        primary: fmtMoney(stats.whtWithheld),
+        secondary: "THB",
+      }
+    : {
+        key: "vatCollected",
+        primary:
+          company.vatRegistered === "yes" ? fmtMoney(stats.vatCollected) : "—",
+        secondary: company.vatRegistered === "yes" ? "THB" : "",
+      };
 
   const cards = [
+    emphasisCard,
     {
-      key: "invoicesThisMonth" as const,
-      primary: stats.invoicesCount.toString(),
-      secondary: `${fmtMoney(stats.invoicesTotal)} THB`,
+      key: "kpiDocuments",
+      primary: fmtInt(tailored.documentsThisMonth),
+      secondary: "",
     },
+    taxCard,
     {
-      key: "vatCollected" as const,
-      primary: fmtMoney(stats.vatCollected),
-      secondary: "THB",
-    },
-    {
-      key: "whtWithheld" as const,
-      primary: fmtMoney(stats.whtWithheld),
-      secondary: "THB",
-    },
-    {
-      key: "outstanding" as const,
+      key: "outstanding",
       primary: fmtMoney(stats.outstanding),
       secondary: "THB",
     },
   ];
+
+  const doneDoc =
+    counts.quotation + counts.invoice + counts.receipt + counts.wht > 0;
+  const doneCustomer = counts.customers > 0;
+  const doneLegal = isLegalComplete(company);
+  const showFirstTask = !(doneDoc && doneCustomer && doneLegal);
 
   // Chart scale — guard against all-zero so empty months don't divide by 0.
   const maxTrend = Math.max(...trend.map((p) => p.total), 1);
 
   return (
     <div className="space-y-6">
-      <div>
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-heading text-2xl font-semibold">
           {t("welcome")}
           {session?.user?.email ? `, ${session.user.email}` : ""}
         </h1>
+        <Link
+          href={`/${cfg.primaryDocType}s/new`}
+          className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3.5 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-brand"
+        >
+          <Plus className="h-4 w-4" />
+          {t("newDoc", { doc: t(`docNames.${cfg.primaryDocType}`) })}
+        </Link>
       </div>
+
+      {showFirstTask ? (
+        <FirstTaskCard
+          primaryDocType={cfg.primaryDocType}
+          doneDoc={doneDoc}
+          doneCustomer={doneCustomer}
+          doneLegal={doneLegal}
+        />
+      ) : null}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map(({ key, primary, secondary }) => (
