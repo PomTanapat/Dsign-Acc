@@ -89,10 +89,10 @@ export async function sendDocumentEmail(
       attachments: [
         {
           filename: `${doc.runningNumber}.pdf`,
-          // Resend SDK accepts a Buffer here at runtime; the TS shape wants
-          // string | Uint8Array depending on the SDK version, so we cast to
-          // Uint8Array which Buffer extends.
-          content: pdfBuffer as unknown as Uint8Array,
+          // Resend's attachment typing has flip-flopped between
+          // string | Uint8Array and string | Buffer across SDK versions —
+          // Buffer.from() satisfies both and is correct at runtime.
+          content: Buffer.from(pdfBuffer),
         },
       ],
     });
@@ -194,7 +194,9 @@ export async function sendWhtEmail(
       attachments: [
         {
           filename: `${cert.runningNumber}.pdf`,
-          content: pdfBuffer as unknown as Uint8Array,
+          // See the document-email attachment note: Buffer.from() satisfies
+          // every Resend SDK typing variant and is correct at runtime.
+          content: Buffer.from(pdfBuffer),
         },
       ],
     });
