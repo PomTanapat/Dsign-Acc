@@ -178,7 +178,7 @@ export function DocumentForm({ type, customers, items }: Props) {
       if (res.success && res.data) {
         router.push(`/${type}s/${res.data.documentId}`);
       } else {
-        setFormError(res.error ?? "generic");
+        setFormError(res.success ? "generic" : res.error || "generic");
       }
     });
   });
