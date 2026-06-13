@@ -1,6 +1,11 @@
 # Phase 7 Spec — Guidance layer + industry onboarding
 
-> **Status:** Spec / ready to build · **Priority:** highest of the unbuilt phases
+> **Status:** BUILT (2026-06-13, branch `feat/phase-7-guidance-onboarding`) —
+> see the **Implementation deviations** section at the bottom for every place
+> the build differs from this spec, and
+> [`phase-7-implementation-plan.md`](phase-7-implementation-plan.md) /
+> [`phase-7-qa-checklist.md`](phase-7-qa-checklist.md) for the plan + QA gate.
+> · **Priority:** highest of the unbuilt phases
 > · **Strategy ref:** `STRATEGY.md` §8 (adaptive guidance), §10 (onboarding),
 > Decision #4 (industry tailoring), Groups 1 & 2.
 >
@@ -205,3 +210,93 @@ though onboarding Q2 links to it).
   Fast mode after N fluent sessions)?
 - **Onboarding length** — 6 questions is the target; validate none cause drop-off;
   consider making 3–6 optional/progressive.
+
+---
+
+## Implementation deviations (recorded 2026-06-13)
+
+Every place the build (branch `feat/phase-7-guidance-onboarding`) deviates
+from this spec or the design handoff, with the reason. Owner-confirmed
+decisions reference the implementation plan (D-numbers).
+
+**Product decisions (owner-confirmed 2026-06-12):**
+1. **Finish-screen assessment is drivers-first (D7).** The prototype scored
+   revenue/profit bands into a verdict; the build derives the verdict ONLY
+   from qualitative drivers. Tax-only / unsure answers get a neutral "let's
+   run your numbers" state. netProfit is stored for Phase 10 prefill but
+   never affects the verdict — Phase 10's `compareIncorporation()` can never
+   contradict it. Scoring lives in `src/lib/guidance/incorporation-teaser.ts`
+   for Phase 10 to absorb.
+2. **Incorporation questions only for "thinking" users (D17).** The prototype
+   forced them on every non-juristic user (10 screens for a salon owner).
+   Individuals get one optional offer screen instead.
+3. **Pricing behind an estimate watermark (D7b).** `PRICING_CONFIRMED=false`
+   in `src/lib/guidance/pricing.ts` until the firm signs off its figures.
+4. **One brand (D13):** the teal token swap intentionally re-themes the
+   marketing site + login.
+5. **revenueBand is yearly (D16)** — supersedes STRATEGY §10's "per month".
+
+**Spec §4 items cut with reason:**
+6. **First-doc step-by-step walkthrough** and **mode-dependent field labels**
+   ("company or person?" vs "Juristic/Individual") were never designed in the
+   prototype and are deferred. The explainers + confirm dialog + first-task
+   card cover the intent; revisit after real-user feedback.
+7. **guided2 ("know the basics")** collapses to `guided` (D4) — no third
+   experience exists. Its option sub-copy was relabeled honestly ("same help,
+   switch to Fast anytime"); the raw answer is kept in `onboardingAnswers`.
+
+**Honesty-driven changes vs the prototype:**
+8. **State-claim stripping (D5):** glossary copy never asserts the reading
+   user's current configuration (4 rewrites documented in `glossary.ts`).
+9. **Threshold nudge basis (D9):** trailing-12-month invoices + receipts (the
+   prototype hardcoded ฿1,640,000; invoice-only would be blind for
+   receipt-primary industries). Known double-count limitation (no
+   invoice→receipt link) errs early, never late — CPA review item.
+10. **WHT-received nudge** became an educational card with no fake figures
+    and no "record the slip" CTA (no received-slip data model exists — that
+    is Phase 6/9 scope).
+11. **Server-side VAT block:** issuing a document charging VAT while
+    `vatRegistered` is 'no' OR 'unsure' is rejected server-side
+    (`vatNotRegistered`) — STRATEGY §8's "can't issue an invalid doc" made
+    real; 'unsure' behaves like 'no' everywhere (safe default).
+12. **"Main" badge follows `primaryDocType`** — fixes the prototype's
+    `unshift(quo)` bug that badged Quotations for invoice-primary industries.
+13. **Never-hide override:** doc types with existing documents (and the WHT
+    item with existing certificates) stay in the nav regardless of industry.
+
+**Mechanics that differ from the prototype:**
+14. **Profile lives on `companies`** (spec §8 left it open); the row is
+    created at onboarding Finish; `nameTh`/`tin`/`addressTh` are nullable
+    with a separate legal-complete gate on document issuance (plan D1).
+15. **Gate flip ships atomically** with the inference backfill (migration
+    0002): existing users get `vatRegistered`/`paysOthers` inferred from
+    real data, `guidanceMode='fast'`, and `onboardingCompletedAt=createdAt`.
+16. **Locale flip on the foreign branch is URL-only** (matches the existing
+    LocaleSwitcher; `users.locale` is not written — neither does the
+    switcher).
+17. **Glossary page is reachable mid-onboarding** (auth-only) so wizard
+    explainer "Learn more" links don't bounce.
+18. **Dashboard "projects" emphasis** maps to open-quotations count (no
+    projects entity exists); "Collected today" became "Collected this month"
+    (consistent month-window queries).
+19. **Talk-to-us is a request form** (owner decision): persists a
+    `lead_events` row (userId-keyed — wizard-stage requests predate the
+    company row) with a callable contact value, then emails the firm
+    (`TALK_TO_US_EMAIL`); `emailedAt` records send success; a daily digest
+    endpoint (`/api/cron/leads-digest`, `CRON_SECRET`) catches anything
+    unhandled until Phase 8.
+20. **Switch-to-Fast suggestion** lives in Settings only, after ≥5 issued
+    documents, dismissed forever on decline; the confirm dialog carries a
+    one-line pointer instead of the planned N-consecutive-confirms valve.
+21. **Presenter bar, demo toasts, fake notification bell** from the
+    prototype were not ported (demo scaffolding). The notification/reminder
+    system is deferred to Phase 8's deadline calendar.
+
+**Pre-launch gates (unchanged from the plan):** CPA sign-off flips
+`draft:false` per glossary term (badges env-gated via
+`NEXT_PUBLIC_SHOW_DRAFT_BADGES`); firm sign-off flips `PRICING_CONFIRMED`;
+foreign-owner figures (incl. the 180- vs 183-day residency discrepancy
+between the glossary and `foreign-owner-context.md`) need specialist review;
+the WHT auto-suggest heuristic and the threshold revenue basis are on the
+same review list. LINE OA id + talk-to-us inbox + response-time promise
+still needed from the owner (`src/lib/constants.ts`, `.env.example`).
