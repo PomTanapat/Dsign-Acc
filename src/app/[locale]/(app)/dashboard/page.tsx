@@ -4,7 +4,13 @@ import { Plus } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { isLegalComplete, requireOnboarded } from "@/lib/queries/company";
 import { industryConfig } from "@/lib/guidance/industry-config";
+import { getVatThresholdStatus } from "@/lib/guidance/threshold-watch";
+import {
+  isVatNudgeArmed,
+  type DismissedNudges,
+} from "@/lib/guidance/threshold-logic";
 import { FirstTaskCard } from "@/components/app/first-task-card";
+import { VatThresholdNudge, WhtInfoCard } from "@/components/app/nudge-cards";
 import {
   Card,
   CardContent,
@@ -152,6 +158,17 @@ export default async function DashboardPage({
   const doneLegal = isLegalComplete(company);
   const showFirstTask = !(doneDoc && doneCustomer && doneLegal);
 
+  // Proactive nudges (plan D9) — real trailing-12-month data, persistent
+  // dismissals, legal-deadline re-arming.
+  const vatStatus = await getVatThresholdStatus();
+  const dismissed = (company.dismissedNudges ?? {}) as DismissedNudges;
+  const showVatNudge =
+    vatStatus.shouldNudge &&
+    isVatNudgeArmed(dismissed.vatThreshold, vatStatus.ratio, new Date());
+  // Educational card for industries whose clients withhold (the #1 fear
+  // moment: "why is my money short 3%?"). Permanent dismissal.
+  const showWhtInfo = cfg.showWhtIssuing && !dismissed.whtInfo;
+
   // Chart scale — guard against all-zero so empty months don't divide by 0.
   const maxTrend = Math.max(...trend.map((p) => p.total), 1);
 
@@ -179,6 +196,14 @@ export default async function DashboardPage({
           doneLegal={doneLegal}
         />
       ) : null}
+
+      {showVatNudge ? (
+        <VatThresholdNudge
+          revenue12m={vatStatus.revenue12m}
+          ratio={vatStatus.ratio}
+        />
+      ) : null}
+      {showWhtInfo ? <WhtInfoCard /> : null}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map(({ key, primary, secondary }) => (
