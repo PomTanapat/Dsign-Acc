@@ -150,6 +150,7 @@
       "taxEstimator": "Tax estimator",
       "customers": "Customers",
       "items": "Items",
+      "glossary": "Tax glossary",
       "settings": "Settings"
     },
     "topbar": {
@@ -559,5 +560,40 @@
       "whtNone": "None",
       "isActive": "Active"
     }
+  },
+  "Guidance": {
+    "learn": "Learn more",
+    "talk": "Not sure? Talk to us",
+    "draft": "Draft · pending review",
+    "draftTooltip": "Draft copy, pending accountant review",
+    "ratesHeading": "Rates by type of income",
+    "managedTitle": "Managed by Dsign",
+    "managedSub": "Full-service accounting — talk to us anytime",
+    "talkDialog": {
+      "title": "Not sure? We're here",
+      "body": "Dsign's CPA-certified team is happy to help — your first consultation is free.",
+      "messageLabel": "What would you like help with?",
+      "messagePlaceholder": "A sentence is plenty — we'll take it from there",
+      "channelLabel": "How should we reach you?",
+      "channel_phone": "Phone call",
+      "channel_line": "LINE",
+      "channel_email": "Email",
+      "contactLabel": "Phone number / LINE ID / email",
+      "submit": "Send request",
+      "submitting": "Sending…",
+      "call": "Call 086-980-7222",
+      "successTitle": "Got it — we're on it",
+      "successBody": "A Dsign accountant will get back to you within 1 business day. Prefer not to wait?",
+      "successCallUs": "Your request is saved, but our notification system hiccuped — to be safe, please call us directly. It's free.",
+      "errorBody": "Something went wrong sending your request — please call us directly, the first consult is free.",
+      "footer": "This is help, not a sell — the first consult is always free.",
+      "close": "Close"
+    }
+  },
+  "Glossary": {
+    "title": "Tax glossary",
+    "sub": "Plain-language explanations for every term you'll meet",
+    "draftBanner": "All explanations are draft copy, pending review by a Dsign accountant for accuracy before they ship.",
+    "foreignSection": "Thai tax for foreign owners"
   }
 }
