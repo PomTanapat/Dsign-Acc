@@ -94,6 +94,14 @@ export async function createDocument(input: unknown): Promise<
 
   const { computedLines, totals } = calculateDocument(data.lines, data.whtRate);
 
+  // Plan D10 — the real "can't issue an invalid doc" guarantee (the client
+  // confirm dialog is bypassable). Issuing a document that charges VAT
+  // without VAT registration is unlawful; "unsure" blocks too — the safe
+  // default routes to help, not to a maybe-illegal document.
+  if (totals.vatAmount > 0 && company.vatRegistered !== "yes") {
+    return { success: false, error: "vatNotRegistered" };
+  }
+
   // Snapshots — frozen at issuance so the PDF stays reproducible.
   const customerSnapshot: CustomerSnapshot = {
     name: customer.name,
