@@ -1,9 +1,11 @@
 // Firm contact facts used by the guidance layer ("Talk to us", onboarding
-// Finish CTA). TODO(owner): confirm the LINE official-account URL and the
-// phone number before the Talk-to-us surface ships publicly.
+// Finish CTA). Confirmed by the owner 2026-06-13.
 
 export const DSIGN_PHONE_DISPLAY = "086-980-7222";
 export const DSIGN_PHONE_TEL = "tel:0869807222";
 
-// Empty string hides LINE buttons until the official-account URL is provided.
-export const DSIGN_LINE_URL = "";
+// LINE Official Account @947emhcw. The add-friend deep link from a basic ID
+// is line.me/R/ti/p/{id}; if the firm prefers their lin.ee short link, swap
+// it here. Non-empty → the Talk-to-us dialog shows a LINE button.
+export const DSIGN_LINE_ID = "@947emhcw";
+export const DSIGN_LINE_URL = "https://line.me/R/ti/p/@947emhcw";
