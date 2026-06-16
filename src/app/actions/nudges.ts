@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
 
 import { db } from "@/lib/db";
-import { companies, leadEvents } from "@/lib/db/schema";
+import { companies } from "@/lib/db/schema";
 import { requireCompany } from "@/lib/queries/company";
 import type { DismissedNudges } from "@/lib/guidance/threshold-logic";
 
@@ -40,17 +40,7 @@ export async function dismissNudge(input: {
   revalidatePath("/", "layout");
 }
 
-/** The nudge's "have us register your VAT" click — a warm lead (Phase 8). */
-export async function logVatThresholdCta(): Promise<void> {
-  try {
-    const { userId, company } = await requireCompany();
-    await db.insert(leadEvents).values({
-      userId,
-      companyId: company?.id ?? null,
-      kind: "vat_threshold_cta",
-      surface: "dashboard",
-    });
-  } catch (err) {
-    console.error("logVatThresholdCta failed", err);
-  }
-}
+// ponytail: the VAT-nudge CTA now opens the Talk-to-us dialog directly, which
+// writes a contactable talk_request (surface 'vat_threshold') and emails the
+// firm. The old separate logVatThresholdCta insert was an uncontactable
+// duplicate that orphaned when the dialog was abandoned — deleted, not kept.

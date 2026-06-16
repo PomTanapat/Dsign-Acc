@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { dismissNudge, logVatThresholdCta } from "@/app/actions/nudges";
+import { dismissNudge } from "@/app/actions/nudges";
 import { useGuidance } from "@/components/guidance/guidance-provider";
 import { baht } from "@/lib/guidance/pricing";
 import { VAT_THRESHOLD_BAHT } from "@/lib/guidance/threshold-logic";
@@ -69,10 +69,7 @@ export function VatThresholdNudge({
         <div className="mt-2 flex flex-wrap items-center gap-3">
           <button
             type="button"
-            onClick={() => {
-              void logVatThresholdCta().catch(() => {});
-              openTalk("vat_threshold");
-            }}
+            onClick={() => openTalk("vat_threshold")}
             className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-[12.5px] font-medium text-primary-foreground transition-colors hover:bg-brand"
           >
             <HandHeart className="h-3.5 w-3.5" />
