@@ -48,3 +48,5 @@
 2. Deploy: Railway runs `npm run db:migrate:deploy` (journal bootstrap marks baseline applied; 0001 adds columns; 0002 backfills + stamps) before `npm start`.
 3. Post-deploy: spot-check one real pre-existing account against section A rows 2–4.
 4. Rollback stance: additive columns are reversible; the NOT NULL relaxation is forward-fix-only once wizard rows exist (documented in the plan, D2).
+5. **Set env in prod:** `TALK_TO_US_EMAIL` (lead inbox) and `CRON_SECRET` (any random string). Without the secret the digest endpoint plays dead.
+6. **Schedule the leads digest** — REQUIRED, not optional. `incorporation_interest` leads send no instant email; the digest is their only delivery. Point a daily scheduler (Railway cron service, or a free pinger like cron-job.org) at `GET /api/cron/leads-digest` with header `Authorization: Bearer $CRON_SECRET`. Without this, soft leads surface nowhere. (`talk_request` — including the Finish "Talk to a CPA" and the VAT nudge — still emails the firm instantly, so it does not depend on the cron.)
