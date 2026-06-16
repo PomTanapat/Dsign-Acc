@@ -57,7 +57,7 @@ import {
   PRICING_YEAR1_TOTAL,
   baht,
 } from "@/lib/guidance/pricing";
-import { DSIGN_PHONE_TEL } from "@/lib/constants";
+import { useGuidance } from "@/components/guidance/guidance-provider";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
@@ -111,6 +111,7 @@ export function FinishReport({
   const tn = useTranslations("Onboarding.nav");
   const ti = useTranslations("Industries");
   const router = useRouter();
+  const { openTalk } = useGuidance();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState(false);
 
@@ -515,11 +516,16 @@ export function FinishReport({
           <Check className="mr-2 h-4 w-4" />
           {t("enterWorkspace")}
         </Button>
-        <Button size="lg" variant="outline" asChild className="flex-1">
-          <a href={DSIGN_PHONE_TEL}>
-            <Phone className="mr-2 h-4 w-4" />
-            {t("talkCpa")}
-          </a>
+        {/* Highest-intent moment in the funnel — capture a durable,
+            contactable lead, not a fire-and-forget phone dial. */}
+        <Button
+          size="lg"
+          variant="outline"
+          className="flex-1"
+          onClick={() => openTalk("finish_assessment")}
+        >
+          <Phone className="mr-2 h-4 w-4" />
+          {t("talkCpa")}
         </Button>
       </div>
       <button
