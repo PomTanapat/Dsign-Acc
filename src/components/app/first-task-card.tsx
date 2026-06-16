@@ -34,35 +34,35 @@ export async function FirstTaskCard({
   const td = await getTranslations("App.dashboard.docNames");
   const doc = td(primaryDocType);
 
-  const steps: {
-    icon: LucideIcon;
-    title: string;
-    sub: string;
-    href: string;
-    done: boolean;
-  }[] = [
-    {
-      icon: FilePlus2,
-      title: t("step1", { doc }),
-      sub: t("step1Sub"),
-      href: `/${primaryDocType}s/new`,
-      done: doneDoc,
-    },
-    {
-      icon: UserPlus,
-      title: t("step2"),
-      sub: t("step2Sub"),
-      href: "/customers",
-      done: doneCustomer,
-    },
-    {
-      icon: Building2,
-      title: t("step3"),
-      sub: t("step3Sub"),
-      href: "/settings",
-      done: doneLegal,
-    },
-  ];
+  const docStep = {
+    icon: FilePlus2,
+    title: t("step1", { doc }),
+    sub: t("step1Sub"),
+    href: `/${primaryDocType}s/new`,
+    done: doneDoc,
+  };
+  const customerStep = {
+    icon: UserPlus,
+    title: t("step2"),
+    sub: t("step2Sub"),
+    href: "/customers",
+    done: doneCustomer,
+  };
+  const legalStep = {
+    icon: Building2,
+    title: t("step3"),
+    sub: t("step3Sub"),
+    href: "/settings",
+    done: doneLegal,
+  };
+
+  // Issuing a document requires legal details (isLegalComplete), so without
+  // them "issue your first {doc}" silently bounces to Settings. Surface the
+  // legal step FIRST until it's done — then it's the obvious next action,
+  // not a surprise redirect.
+  const steps: (typeof docStep)[] = doneLegal
+    ? [docStep, customerStep, legalStep]
+    : [legalStep, docStep, customerStep];
 
   return (
     <div className="overflow-hidden rounded-xl border bg-card">
