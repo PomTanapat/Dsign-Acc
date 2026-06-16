@@ -1,8 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { asc, eq } from "drizzle-orm";
+import { and, asc, eq, gte } from "drizzle-orm";
 
 import { db } from "@/lib/db";
-import { leadEvents } from "@/lib/db/schema";
+import { leadEvents, users } from "@/lib/db/schema";
 import { getEmailFrom, getResend } from "@/lib/email/client";
 
 // Daily digest of unhandled "Talk to us" leads (plan D19): until the Phase 8
@@ -28,35 +28,46 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const open = await db.query.leadEvents.findMany({
-    where: eq(leadEvents.status, "new"),
-    orderBy: [asc(leadEvents.createdAt)],
-  });
+  // ponytail: rolling 48h window instead of all status='new'. Nothing flips
+  // status to 'handled' until Phase 8, so an all-time query would re-send the
+  // same backlog every day until the firm tunes it out. 48h tolerates one
+  // missed run; daily cadence means no lead is skipped.
+  const cutoff = new Date(Date.now() - 1000 * 60 * 60 * 48);
+  const open = await db
+    .select({ lead: leadEvents, email: users.email })
+    .from(leadEvents)
+    .leftJoin(users, eq(users.id, leadEvents.userId))
+    .where(and(eq(leadEvents.status, "new"), gte(leadEvents.createdAt, cutoff)))
+    .orderBy(asc(leadEvents.createdAt));
   // talk_open rows are funnel telemetry, not actionable requests.
-  const actionable = open.filter((l) => l.kind !== "talk_open");
+  const actionable = open.filter((r) => r.lead.kind !== "talk_open");
 
   if (actionable.length === 0) {
     return NextResponse.json({ sent: false, count: 0 });
   }
 
-  const lines = actionable.map((l) => {
+  const lines = actionable.map(({ lead: l, email }) => {
+    // Soft signals (incorporation_interest) carry no contactValue — fall back
+    // to the account email so the firm can always reach the person.
     const reach = l.contactValue
       ? `${l.contactChannel ?? "?"}: ${l.contactValue}`
-      : "no contact captured";
-    const flag = l.emailedAt ? "" : " [notification email failed]";
+      : email
+        ? `email: ${email}`
+        : "no contact captured";
+    const flag = l.emailedAt ? "" : " [no instant email — digest only]";
     return `- [${l.kind}] ${l.createdAt.toISOString()} · ${reach} · surface: ${l.surface ?? "—"}${l.message ? ` · "${l.message}"` : ""}${flag}`;
   });
 
   const res = await getResend().emails.send({
     from: getEmailFrom(),
     to,
-    subject: `Open talk-to-us leads: ${actionable.length}`,
+    subject: `New leads (last 48h): ${actionable.length}`,
     text: [
-      `There are ${actionable.length} unhandled lead(s):`,
+      `${actionable.length} lead(s) from the last 48 hours:`,
       "",
       ...lines,
       "",
-      "Mark them handled in the database (lead_events.status) until the Phase 8 back-office ships.",
+      "Reach out within a business day. (Phase 8 back-office will track status; for now this digest re-lists the rolling window.)",
     ].join("\n"),
   });
   if (res.error) {
