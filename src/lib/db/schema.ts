@@ -77,21 +77,26 @@ export const verificationTokens = pgTable(
 
 // -------------------- Phase 1: foundations --------------------
 
-// companies — solo workspace model: exactly one company per user. Created on
-// first visit to /settings, not at signup.
+// companies — solo workspace model: exactly one company per user.
+//
+// Phase 7: the row is created at onboarding Finish (before legal details
+// exist), so the legal columns nameTh/tin/addressTh are nullable. Two
+// orthogonal predicates in src/lib/queries/company.ts decide what a user
+// can do: isOnboarded() (interview done) gates the whole workspace;
+// isLegalComplete() (legal fields present) gates document issuance.
 export const companies = pgTable("companies", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: text("userId")
     .notNull()
     .unique()
     .references(() => users.id, { onDelete: "cascade" }),
-  nameTh: text("nameTh").notNull(),
+  nameTh: text("nameTh"),
   nameEn: text("nameEn"),
   // 13-digit Thai taxpayer id.
-  tin: text("tin").notNull(),
+  tin: text("tin"),
   // Head office is "00000"; physical branches use their own code.
   branchCode: text("branchCode").notNull().default("00000"),
-  addressTh: text("addressTh").notNull(),
+  addressTh: text("addressTh"),
   addressEn: text("addressEn"),
   phone: text("phone"),
   email: text("email"),
@@ -101,6 +106,30 @@ export const companies = pgTable("companies", {
     .notNull()
     .default("7.00"),
   defaultCurrency: text("defaultCurrency").notNull().default("THB"),
+  // ---------- Phase 7: business profile + guidance ----------
+  industry: text("industry").$type<Industry>().notNull().default("other"),
+  entityType: text("entityType")
+    .$type<EntityType>()
+    .notNull()
+    .default("individual"),
+  revenueBand: text("revenueBand").$type<RevenueBand>(),
+  // Tri-state on purpose — "unsure" behaves like "no" everywhere (safe
+  // default) but routes the user to help instead of a dead end.
+  vatRegistered: text("vatRegistered").$type<TriState>().notNull().default("no"),
+  paysOthers: text("paysOthers").$type<TriState>().notNull().default("no"),
+  guidanceMode: text("guidanceMode")
+    .$type<GuidanceMode>()
+    .notNull()
+    .default("guided"),
+  foreignOwned: boolean("foreignOwned").notNull().default(false),
+  ownershipStructure: text("ownershipStructure"),
+  workPermitNeed: text("workPermitNeed"),
+  // Raw onboarding answers (versioned) — Phase 8 lead context and Phase 10
+  // assessment prefill read this; never used for app behavior directly.
+  onboardingAnswers: jsonb("onboardingAnswers"),
+  onboardingCompletedAt: timestamp("onboardingCompletedAt", { mode: "date" }),
+  // { [nudgeId]: dismissedAtISO } — threshold nudges re-arm, see plan D9.
+  dismissedNudges: jsonb("dismissedNudges"),
   createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
   updatedAt: timestamp("updatedAt", { mode: "date" }).notNull().defaultNow(),
 });
@@ -140,6 +169,35 @@ export const items = pgTable("items", {
   isActive: boolean("isActive").notNull().default(true),
   createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
   updatedAt: timestamp("updatedAt", { mode: "date" }).notNull().defaultNow(),
+});
+
+// -------------------- Phase 7: lead events --------------------
+
+// Every "Not sure? Talk to us" request and warm-lead signal. Keyed by user
+// (not company) because the most valuable requests happen mid-onboarding,
+// before any companies row exists. Phase 8's back-office leads/triggers
+// table evolves from this.
+export const leadEvents = pgTable("lead_events", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  companyId: uuid("companyId").references(() => companies.id, {
+    onDelete: "set null",
+  }),
+  // "talk_request" | "talk_open" | "incorporation_interest" | "vat_threshold_cta"
+  kind: text("kind").$type<LeadEventKind>().notNull(),
+  // Where it came from: a glossary term key or a screen identifier.
+  surface: text("surface"),
+  message: text("message"),
+  // "phone" | "line" | "email" — plus the actual value to reach them with.
+  contactChannel: text("contactChannel"),
+  contactValue: text("contactValue"),
+  // Set when the notification email to the firm was sent successfully —
+  // null rows are leads nobody has been told about (the daily digest's job).
+  emailedAt: timestamp("emailedAt", { mode: "date" }),
+  status: text("status").$type<LeadEventStatus>().notNull().default("new"),
+  createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
 });
 
 // -------------------- Phase 2: documents --------------------
@@ -379,6 +437,37 @@ export type NewUser = typeof users.$inferInsert;
 
 export type Company = typeof companies.$inferSelect;
 export type NewCompany = typeof companies.$inferInsert;
+
+// -------------------- Phase 7 profile + lead types --------------------
+
+export type Industry =
+  | "freelance"
+  | "online"
+  | "food"
+  | "retail"
+  | "prof"
+  | "contractor"
+  | "salon"
+  | "other";
+
+export type EntityType = "individual" | "juristic" | "thinking";
+
+export type RevenueBand = "under" | "near" | "over" | "unsure";
+
+export type TriState = "yes" | "no" | "unsure";
+
+export type GuidanceMode = "guided" | "fast";
+
+export type LeadEventKind =
+  | "talk_request"
+  | "talk_open"
+  | "incorporation_interest"
+  | "vat_threshold_cta";
+
+export type LeadEventStatus = "new" | "handled";
+
+export type LeadEvent = typeof leadEvents.$inferSelect;
+export type NewLeadEvent = typeof leadEvents.$inferInsert;
 
 export type Customer = typeof customers.$inferSelect;
 export type NewCustomer = typeof customers.$inferInsert;

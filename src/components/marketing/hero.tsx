@@ -13,7 +13,7 @@ export function Hero() {
       <div className="container py-20 md:py-28">
         <div className="mx-auto max-w-3xl text-center">
           <Link
-            href="/login"
+            href="/signup"
             className="inline-flex items-center gap-2 rounded-full border bg-background px-4 py-1.5 text-sm shadow-sm transition-colors hover:bg-accent"
           >
             <span>{t("badge")}</span>

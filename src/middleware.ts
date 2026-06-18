@@ -18,6 +18,8 @@ const PROTECTED_SEGMENTS = [
   "customers",
   "items",
   "settings",
+  "onboarding",
+  "glossary",
 ];
 
 // Auth.js v5 cookie names — checked in order; first hit wins.

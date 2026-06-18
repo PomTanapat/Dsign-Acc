@@ -10,7 +10,7 @@
   },
   "Hero": {
     "badge": "✨ New: Issue quotations and tax invoices online",
-    "badgeCta": "Login",
+    "badgeCta": "Sign up free",
     "title": "Full-service accounting firm — Dsign Accounting",
     "subtitle": "Accounting and tax specialists you can rely on.",
     "ctaConsult": "Free consultation",
@@ -150,10 +150,19 @@
       "taxEstimator": "Tax estimator",
       "customers": "Customers",
       "items": "Items",
-      "settings": "Settings"
+      "glossary": "Tax glossary",
+      "settings": "Settings",
+      "mainBadge": "main",
+      "groups": {
+        "documents": "Documents",
+        "tools": "Tools",
+        "data": "Data",
+        "guidance": "Guidance"
+      }
     },
     "topbar": {
-      "signOut": "Sign out"
+      "signOut": "Sign out",
+      "tailoredFor": "Tailored for {industry}"
     },
     "dashboard": {
       "welcome": "Welcome",
@@ -171,7 +180,30 @@
       "topCustomersSubtitle": "By total invoice value this calendar month.",
       "topCustomersEmpty": "No invoices this month yet.",
       "type": "Type",
-      "invoiceCount": "Invoices"
+      "invoiceCount": "Invoices",
+      "kpiSales": "Sales this month",
+      "kpiCollected": "Collected this month",
+      "kpiOpenQuotations": "Open quotations",
+      "kpiOpenQuotationsSub": "Awaiting response",
+      "kpiDocuments": "Documents this month",
+      "newDoc": "New {doc}",
+      "docNames": {
+        "quotation": "quotation",
+        "invoice": "tax invoice",
+        "receipt": "receipt"
+      },
+      "firstTask": {
+        "title": "Start here",
+        "sub": "The first things worth doing",
+        "step1": "Issue your first {doc}",
+        "step1Sub": "It takes under a minute",
+        "step2": "Add your first customer",
+        "step2Sub": "Save a buyer's details to reuse",
+        "step3": "Complete your business profile",
+        "step3Sub": "Name, address & tax ID on documents",
+        "start": "Start",
+        "done": "Done"
+      }
     },
     "placeholder": {
       "comingSoon": "This feature is in development.",
@@ -214,6 +246,31 @@
     "onboardingBanner": "Set up your company info to start issuing documents.",
     "savedSuccess": "Saved successfully.",
     "savedError": "Save failed. Please try again.",
+    "profileSection": {
+      "title": "Business profile",
+      "sub": "Edit what you told us at the start — the sidebar and dashboard re-tailor to match.",
+      "industry": "Industry",
+      "vatStatus": "VAT status",
+      "vatYes": "Registered (7%)",
+      "vatNo": "Not registered",
+      "vatUnsure": "Not sure",
+      "vatRateHint": "Your VAT status decides whether VAT is on; the default VAT rate below only applies when it is.",
+      "paysOthers": "Pays others",
+      "paysYes": "Yes — staff, freelancers, or rent",
+      "paysNo": "No, just me",
+      "save": "Save profile",
+      "saved": "Profile updated — the app re-tailored to match."
+    },
+    "guidanceSection": {
+      "title": "Guidance mode",
+      "guidedTitle": "Guided — with help",
+      "guidedDesc": "Plain-language help on every tax term stays open, with safe defaults and a confirm step before anything with tax impact. Best for beginners.",
+      "fastTitle": "Fast — minimal",
+      "fastDesc": "Help is hidden (hover to see), forms are lean and keyboard-first, no confirm dialogs. Best for experienced users.",
+      "suggestFast": "You seem comfortable — turn guides off to work faster?",
+      "suggestYes": "Switch to Fast",
+      "suggestNo": "Keep Guided"
+    },
     "fields": {
       "nameTh": "Company name (Thai)",
       "nameEn": "Company name (English)",
@@ -260,6 +317,7 @@
     }
   },
   "Documents": {
+    "emptyPrimaryHint": "This is your main document type — your first one takes under a minute.",
     "types": {
       "quotation": "Quotation",
       "invoice": "Tax invoice",
@@ -332,6 +390,19 @@
     "empty": "No receipts yet — create your first."
   },
   "DocumentForm": {
+    "vatOffNote": "You're not VAT-registered, so VAT is off — the safe, correct default.",
+    "vatOffNoteUnsure": "We're not sure you're VAT-registered yet, so VAT is off — the safe default. We can help you check.",
+    "whtHidden": "Your business doesn't issue withholding certificates, so we've hidden them.",
+    "whtServiceHint": "Company clients sometimes withhold ~3% on services — if that happens, record it here so your net amount is right.",
+    "confirm": {
+      "title": "Confirm before issuing",
+      "vat": "This document charges 7% VAT ({amt}) — only correct if you're VAT-registered.",
+      "wht": "Your customer will withhold {amt}. You'll actually receive {net}.",
+      "running": "The running number will be fixed and can't be reused.",
+      "suggestFast": "Comfortable with these checks? Switch to Fast mode in Settings to skip them.",
+      "cancel": "Cancel",
+      "confirm": "Confirm & issue"
+    },
     "customer": "Customer",
     "customerPlaceholder": "Select a customer",
     "issueDate": "Issue date",
@@ -356,6 +427,11 @@
     "errors": {
       "customerRequired": "Please choose a customer.",
       "noLines": "Add at least one line item.",
+      "validation": "Please check the form for errors.",
+      "customerNotFound": "That customer no longer exists — pick another.",
+      "noCompany": "Set up your company first.",
+      "companyIncomplete": "Complete your company details in Settings before issuing documents.",
+      "vatNotRegistered": "Your profile says you're not VAT-registered, so this document can't charge VAT — issuing it wouldn't be legal. Registered? Update your VAT status in Settings. Not sure? Talk to us — it's free.",
       "generic": "Something went wrong. Please try again."
     }
   },
@@ -559,5 +635,348 @@
       "whtNone": "None",
       "isActive": "Active"
     }
+  },
+  "Guidance": {
+    "learn": "Learn more",
+    "talk": "Not sure? Talk to us",
+    "draft": "Draft · pending review",
+    "draftTooltip": "Draft copy, pending accountant review",
+    "ratesHeading": "Rates by type of income",
+    "managedTitle": "Managed by Dsign",
+    "managedSub": "Full-service accounting — talk to us anytime",
+    "talkDialog": {
+      "title": "Not sure? We're here",
+      "body": "Dsign's CPA-certified team is happy to help — your first consultation is free.",
+      "messageLabel": "What would you like help with?",
+      "messagePlaceholder": "A sentence is plenty — we'll take it from there",
+      "channelLabel": "How should we reach you?",
+      "channel_phone": "Phone call",
+      "channel_line": "LINE",
+      "channel_email": "Email",
+      "contactLabel": "Phone number / LINE ID / email",
+      "submit": "Send request",
+      "submitting": "Sending…",
+      "call": "Call 086-980-7222",
+      "successTitle": "Got it — we're on it",
+      "successBody": "A Dsign accountant will get back to you within 1 business day. Prefer not to wait?",
+      "successCallUs": "Your request is saved, but our notification system hiccuped — to be safe, please call us directly. It's free.",
+      "errorBody": "Something went wrong sending your request — please call us directly, the first consult is free.",
+      "footer": "This is help, not a sell — the first consult is always free.",
+      "close": "Close"
+    }
+  },
+  "Glossary": {
+    "title": "Tax glossary",
+    "sub": "Plain-language explanations for every term you'll meet",
+    "draftBanner": "All explanations are draft copy, pending review by a Dsign accountant for accuracy before they ship.",
+    "foreignSection": "Thai tax for foreign owners"
+  },
+  "Nudges": {
+    "dismiss": "Dismiss",
+    "vatThreshold": {
+      "title": "You're getting close to the VAT threshold",
+      "body": "Your sales over the last 12 months are {amount} — about {remaining} from ฿1.8M. Once you pass it, you must register for VAT within 30 days. (Based on the documents you issue in Dsign.)",
+      "barLabel": "{amount} / ฿1.8M",
+      "cta": "Have us register your VAT",
+      "learn": "What is the VAT threshold?"
+    },
+    "whtInfo": {
+      "title": "Got a withholding-tax slip from a client?",
+      "body": "When company clients pay you, they often withhold ~3% and give you a certificate (50 ทวิ). That money isn't lost — you claim it back when you file. Keep every slip.",
+      "dismiss": "Got it"
+    }
+  },
+  "Onboarding": {
+    "aside": {
+      "title": "Let’s tailor this to you",
+      "intro": "Answer a few quick questions and we’ll shape the screens, documents and guidance around your work.",
+      "reassure1": "Under 3 minutes",
+      "reassure2": "Skip or resume anytime",
+      "reassure3": "Editable later in Settings"
+    },
+    "progress": {
+      "counter": "Question {current} of {total}"
+    },
+    "nav": {
+      "back": "Back",
+      "next": "Next",
+      "finish": "Get started",
+      "skipAll": "Skip for now"
+    },
+    "resume": {
+      "title": "Pick up where you left off",
+      "sub": "You’ve already answered a few",
+      "continue": "Continue",
+      "startOver": "Start over"
+    },
+    "foreignNote": "We’ll switch to English-first and add Thai-tax context for foreign owners.",
+    "foreignTag": "Foreign owner",
+    "multiNote": "Choose any that apply, then press “Next”",
+    "stepLabels": {
+      "industry": "Your business",
+      "nationality": "Ownership",
+      "ownershipStructure": "Ownership structure",
+      "workPermitNeed": "Work permit",
+      "entityType": "Entity type",
+      "revenueBand": "Yearly revenue",
+      "vatRegistered": "VAT status",
+      "paysOthers": "Who you pay",
+      "guidanceMode": "Comfort level",
+      "decideOffer": "Quick check",
+      "whyIncorporate": "Why incorporate",
+      "clientType": "Your customers",
+      "netProfit": "Net profit"
+    },
+    "q": {
+      "industry": {
+        "q": "What kind of business do you run?",
+        "help": "Pick the closest one — we’ll tailor the screens and documents to your work. You can change this later."
+      },
+      "nationality": {
+        "q": "Are you or your shareholders Thai nationals?",
+        "help": "We ask only to tailor the language and explanations — it doesn’t affect access.",
+        "note": "Sets your primary language and Thai-tax context",
+        "opts": {
+          "thai": { "label": "Yes, Thai", "sub": "Thai-first interface" },
+          "foreign": { "label": "Foreign owner / shareholders", "sub": "English-first + Thai-tax context" }
+        }
+      },
+      "entityType": {
+        "q": "Right now, are you just yourself or a registered company?",
+        "help": "Answer for where you are today — you can change it anytime.",
+        "note": "Sets individual vs. juristic defaults",
+        "opts": {
+          "individual": { "label": "Just myself (individual)", "sub": "Not a registered company" },
+          "juristic": { "label": "A registered company (juristic)", "sub": "Has a 13-digit company ID" },
+          "thinking": { "label": "Thinking about a company", "sub": "We can help you assess it" }
+        }
+      },
+      "revenueBand": {
+        "q": "Roughly how much do you make a year?",
+        "help": "A rough band is fine — it’s only used to warn you before you must register for VAT.",
+        "note": "Used to warn you near the ฿1.8M VAT threshold",
+        "opts": {
+          "under": { "label": "Under ฿1.8M", "sub": "No VAT needed yet" },
+          "near": { "label": "฿1.8M – ฿10M", "sub": "VAT required" },
+          "over": { "label": "Over ฿10M", "sub": "" },
+          "unsure": { "label": "Not sure", "sub": "That’s fine — we’ll watch it for you" }
+        }
+      },
+      "vatRegistered": {
+        "q": "Are you registered for VAT?",
+        "help": "Not sure? Pick “Not sure” and we’ll explain it.",
+        "note": "Decides whether VAT fields appear at all",
+        "opts": {
+          "yes": { "label": "Yes, registered", "sub": "Turns on 7% VAT" },
+          "no": { "label": "Not registered", "sub": "We’ll keep VAT off — the safe default" },
+          "unsure": { "label": "Not sure", "sub": "We’ll explain and help you check" }
+        }
+      },
+      "paysOthers": {
+        "q": "Do you pay staff, freelancers, or rent?",
+        "help": "If so, you may need to issue withholding-tax certificates — we’ll turn that tool on.",
+        "note": "Decides whether WHT-issuing features appear",
+        "opts": {
+          "yes": { "label": "Yes, I pay others", "sub": "Turns on WHT certificates" },
+          "no": { "label": "No, just me", "sub": "Hides tools you don’t need yet" }
+        }
+      },
+      "guidanceMode": {
+        "q": "How comfortable are you with tax & accounting?",
+        "help": "We’ll set the right level of explanation — switch anytime.",
+        "opts": {
+          "guided": { "label": "New to this", "sub": "Guided mode — help on everything" },
+          "guided2": { "label": "Know the basics", "sub": "Guided mode — same help, and you can switch to Fast anytime" },
+          "fast": { "label": "Experienced, keep it fast", "sub": "Fast mode — lean form, keyboard-first" }
+        }
+      },
+      "ownershipStructure": {
+        "q": "How is your company’s ownership structured?",
+        "help": "Thai law caps foreign shareholding in many activities — we’ll help you land on the right, compliant structure.",
+        "opts": {
+          "thaiMajority": { "label": "Thai-majority company", "sub": "Thai partners hold ≥ 51%" },
+          "boi": { "label": "BOI-promoted", "sub": "Up to 100% foreign + tax perks" },
+          "amity": { "label": "US Treaty of Amity", "sub": "US owners can hold ~100%" },
+          "branch": { "label": "Branch / representative office", "sub": "Of a foreign parent company" },
+          "unsure": { "label": "Not sure yet", "sub": "We’ll help you choose" }
+        }
+      },
+      "workPermitNeed": {
+        "q": "Will you or foreign staff work in Thailand?",
+        "help": "If so, you’ll need a work permit — which sets a minimum registered capital and a Thai-employee ratio.",
+        "opts": {
+          "yes": { "label": "Yes — we’ll need work permits", "sub": "Drives capital + Thai-staff ratio" },
+          "no": { "label": "No — run it from abroad", "sub": "Owner only, no local work" },
+          "unsure": { "label": "Not sure", "sub": "We can assess it for you" }
+        }
+      },
+      "decideOffer": {
+        "q": "Curious whether a company would fit you?",
+        "help": "Optional — three quick questions for an honest first read. No push either way.",
+        "opts": {
+          "yes": { "label": "Yes, ask me", "sub": "3 quick questions" },
+          "skip": { "label": "Skip to my workspace", "sub": "You can check anytime later" }
+        }
+      },
+      "whyIncorporate": {
+        "q": "What’s making you think about incorporating?",
+        "help": "Pick all that apply — most people don’t incorporate because they hit a revenue threshold, but for these reasons. We’ll weigh them for your case.",
+        "opts": {
+          "corpClients": { "label": "My clients are companies — they want tax invoices / withhold tax" },
+          "credibility": { "label": "Look more credible, win bigger work" },
+          "liability": { "label": "Limit liability — separate business debt from me" },
+          "funding": { "label": "Borrow, take partners, or sell shares / raise capital" },
+          "tax": { "label": "Save tax once profit grows" },
+          "hiring": { "label": "Hire staff / grow a team" },
+          "unsure": { "label": "Not sure yet — help me assess" }
+        }
+      },
+      "clientType": {
+        "q": "Who are most of your customers?",
+        "help": "This matters a lot — company clients usually want documents from a juristic entity, and they withhold tax from you.",
+        "opts": {
+          "corp": { "label": "Mostly companies (juristic)", "sub": "They want tax invoices + withhold tax" },
+          "mixed": { "label": "A mix of companies and individuals", "sub": "" },
+          "individual": { "label": "Mostly individuals (consumers)", "sub": "e.g. retail, direct to consumer" }
+        }
+      },
+      "netProfit": {
+        "q": "Roughly your yearly net profit (income after expenses)?",
+        "help": "Net profit — not sales — is what actually decides the tax question. A rough number is fine.",
+        "opts": {
+          "low": { "label": "Under ฿300,000", "sub": "Still small" },
+          "mid": { "label": "฿300,000 – ฿750,000", "sub": "" },
+          "high": { "label": "฿750,000 – ฿3M", "sub": "Company tax starts to win" },
+          "vhigh": { "label": "Over ฿3M", "sub": "" },
+          "unsure": { "label": "Not sure", "sub": "We can help you work it out" }
+        }
+      }
+    },
+    "finish": {
+      "kickerAssessment": "Incorporation assessment",
+      "kickerSummary": "Your business summary",
+      "titleAssessment": "Should you incorporate? — for your case",
+      "titleSummary": "Honest, with nothing hidden",
+      "verdict": {
+        "likely": {
+          "label": "Incorporating likely fits you",
+          "headline": "Several strong reasons line up in your case",
+          "body": "From the reasons you gave, a company fits how you work. We can register it and set up the accounting end-to-end — and we always confirm everything with you before anything is filed."
+        },
+        "considering": {
+          "label": "Worth considering",
+          "headline": "Real upsides and real trade-offs — weigh both before deciding",
+          "body": "There's a real case for it, and a real recurring cost. Talk to us and we'll walk through your exact situation — free."
+        },
+        "numbers": {
+          "label": "Let's run your numbers",
+          "headline": "Your answer points at the tax math — that deserves a real calculation, not a guess",
+          "body": "Whether a company saves you tax depends on your actual profit and expenses. Talk to us and we'll compute it both ways with you — free."
+        },
+        "none": {
+          "label": "No strong reason stood out yet",
+          "headline": "Many businesses don't need to rush this",
+          "body": "From what you told us, staying as you are looks reasonable for now. We'll tell you the moment that changes — and you can re-check anytime."
+        },
+        "foreign": {
+          "label": "You'll likely operate as a Thai company",
+          "headline": "Here's the yearly accounting cost once it's running",
+          "body": "Foreign owners typically operate through a Thai company. Your setup — ownership structure, capital, work permits — is quoted case-by-case after a free consult; the recurring cost below applies once you're running."
+        },
+        "juristic": {
+          "label": "You’re already a company",
+          "headline": "Focus on clean books and on-time filing",
+          "body": "As a company, what matters now is complete books, year-end statements and filing on time. We can run all of it — your yearly cost is below."
+        }
+      },
+      "prosTitle": "Why it fits you",
+      "consTitle": "What you’d trade off",
+      "prosEmpty": "No strong reason stood out from your answers — which is fine; many businesses needn’t rush.",
+      "pros": {
+        "corpClients": "Company clients want tax invoices and withhold tax — as a juristic entity you can take that work and issue exactly the documents they need.",
+        "corpCustomers": "Most of your customers are already companies — one of the strongest practical reasons to incorporate.",
+        "credibility": "More credibility — easier with banks, tenders and long-term contracts with organisations.",
+        "liability": "Limited liability — if the business owes money, your personal assets are protected (you risk only unpaid share capital).",
+        "funding": "Ready to borrow, take partners or sell shares / raise capital — banks and investors need a juristic entity.",
+        "hiring": "Supports hiring — proper payroll and social security (5% each side, max ฿750/mo).",
+        "smeRates": "SME corporate rates are tiered — first ฿300,000 exempt, then 15% up to ฿3M — versus personal rates up to 35%. Worth running your real numbers."
+      },
+      "cons": {
+        "cost": "A recurring cost (from ≈฿46,000/yr at Dsign) and a legally-required annual audit — even in years with no profit.",
+        "discipline": "You must keep formal books and file every month — more documents and discipline.",
+        "dividends": "Money in the company isn’t personal money — take it out via salary (a deductible cost) or dividends (10% withholding). It needs planning."
+      },
+      "cost": {
+        "kicker": "Estimate",
+        "titleIf": "Estimated yearly cost if you incorporate",
+        "titleAlready": "Your company’s yearly cost",
+        "providerBadge": "Dsign pricing",
+        "estimateBadge": "First-pass estimate",
+        "oneTimeTitle": "One-time (year 1)",
+        "yearlyTitle": "Every year",
+        "setupLabel": "Company registration with Dsign",
+        "setupNote": "Incl. government fees + VAT / employer registration when needed",
+        "bookkeepingLabel": "Bookkeeping + monthly tax filings",
+        "bookkeepingNote": "PP30, PND 1/3/53 · from ฿2,500/mo",
+        "yearEndLabel": "Year-end financial statements",
+        "yearEndNote": "CIT return (PND 50) + DBD filing",
+        "auditLabel": "Statutory CPA audit",
+        "auditNote": "Required by law for every company, even loss years",
+        "year1Total": "Year 1 total (incl. setup)",
+        "yearlyTotal": "Yearly cost thereafter",
+        "perYear": "/yr",
+        "foreignSetupNote": "Your setup (ownership structure, capital, work permits) is quoted case-by-case — after a free consult.",
+        "counterIndividual": "As an individual your accounting cost is very low (~฿5,000–30,000/yr), you file once a year, and at lower profit the 60% deemed-expense deduction can leave you paying less tax than a company would.",
+        "counterForeign": "From 1 Jan 2026, nominee rules tightened — Thai shareholders in foreign-linked companies must show 3 months of bank statements proving real capital. Foreign-owner setup (FBA/BOI, registered capital, work permits) is quoted case-by-case.",
+        "counterScale": "These are starting prices for a small, low-volume company; they grow with documents and staff (a fully active company often runs ฿80,000–200,000+/yr). We quote clearly up front — no hidden fees."
+      },
+      "configured": {
+        "title": "And here’s what we’ve already set up for you",
+        "industry": "Business type",
+        "guidance": "Guidance mode",
+        "guidanceGuided": "Guided",
+        "guidanceFast": "Fast",
+        "vat": "VAT",
+        "vatOn": "On (7%)",
+        "vatOff": "Off — the safe default",
+        "wht": "Withholding tax",
+        "whtOn": "Tools on",
+        "whtOff": "Hidden"
+      },
+      "foreignEss": {
+        "title": "Your foreign-owner essentials",
+        "sub": "Based on your answers, here’s what the Dsign team will help you handle.",
+        "tagSetup": "Setup",
+        "tagTax": "Tax",
+        "ownership": {
+          "thaiMajority": { "t": "Thai-majority company", "d": "Thai partners ≥ 51% under the Foreign Business Act" },
+          "boi": { "t": "BOI-promoted company", "d": "Up to 100% foreign ownership + CIT holiday" },
+          "amity": { "t": "US Treaty of Amity", "d": "US owners can hold ~100%" },
+          "branch": { "t": "Branch / representative office", "d": "Registered for a foreign parent company" },
+          "unsure": { "t": "We’ll recommend a structure", "d": "Compliant with the Foreign Business Act" }
+        },
+        "permit": {
+          "yes": { "t": "Work permit + Non-B visa", "d": "฿2M capital per permit · 4 Thai staff each" },
+          "no": { "t": "No work permit needed", "d": "You run the company from abroad" },
+          "unsure": { "t": "We’ll assess your work-permit needs", "d": "Plus the right registered capital" }
+        },
+        "cit": { "t": "Corporate income tax", "d": "20% standard · SME tiered 0–15%" },
+        "dividend": { "t": "Dividend withholding + treaty relief", "d": "10%, may be reduced by a tax treaty" }
+      },
+      "enterWorkspace": "Enter workspace",
+      "talkCpa": "Talk to a CPA — free",
+      "disclaimer": "These figures and advice are a first-pass estimate — Dsign’s CPA team always confirms with you before anything is filed.",
+      "error": "Something went wrong saving your setup — please try again, or call us and we'll sort it out."
+    }
+  },
+  "Industries": {
+    "freelance": { "label": "Freelancer / creative" },
+    "online": { "label": "Online seller" },
+    "food": { "label": "Food & café" },
+    "retail": { "label": "Retail / trading" },
+    "prof": { "label": "Professional services" },
+    "contractor": { "label": "Contractor / events" },
+    "salon": { "label": "Salon / beauty" },
+    "other": { "label": "Other / not sure" }
   }
 }

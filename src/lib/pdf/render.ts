@@ -2,7 +2,7 @@ import "server-only";
 
 import { Readable } from "node:stream";
 import React from "react";
-import { renderToStream } from "@react-pdf/renderer";
+import { renderToStream, type DocumentProps } from "@react-pdf/renderer";
 
 import { DocumentPDF } from "@/components/pdf/document-pdf";
 import {
@@ -35,8 +35,12 @@ async function streamToBuffer(
 export async function renderDocumentPdfBuffer(
   payload: DocumentPayload,
 ): Promise<Buffer> {
+  // renderToStream's typing wants ReactElement<DocumentProps>, but our
+  // components wrap <Document> one level down — the cast is safe.
   const stream = await renderToStream(
-    React.createElement(DocumentPDF, { payload }),
+    React.createElement(DocumentPDF, {
+      payload,
+    }) as unknown as React.ReactElement<DocumentProps>,
   );
   return streamToBuffer(stream as unknown as Readable);
 }
@@ -45,7 +49,9 @@ export async function renderWhtPdfBuffer(
   data: WhtCertificatePdfData,
 ): Promise<Buffer> {
   const stream = await renderToStream(
-    React.createElement(WhtCertificatePDF, { data }),
+    React.createElement(WhtCertificatePDF, {
+      data,
+    }) as unknown as React.ReactElement<DocumentProps>,
   );
   return streamToBuffer(stream as unknown as Readable);
 }

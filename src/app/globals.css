@@ -15,8 +15,13 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Ledger design system — brand teal evolved from the logo (#106070).
+       Primary action teal-500 #157E8C; brand/logo teal-600 #106070. */
+    --primary: 187 74% 32%;
+    --primary-foreground: 185 40% 98%;
+
+    --brand: 190 75% 25%;
+    --brand-foreground: 185 40% 98%;
 
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -27,12 +32,21 @@
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
 
-    --destructive: 0 84.2% 60.2%;
+    /* Semantic (muted, grown-up): success #1F8F5F · warning #B5790F ·
+       danger #C24A42. Soft surfaces back nudge cards and explainer cards. */
+    --success: 154 64% 34%;
+    --success-soft: 147 46% 91%;
+    --warning: 38 85% 38%;
+    --warning-soft: 42 78% 91%;
+    --info-soft: 186 38% 95%;
+    --info-border: 185 41% 87%;
+
+    --destructive: 4 51% 51%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 187 74% 32%;
 
     --radius: 0.5rem;
 
@@ -50,8 +64,11 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 187 55% 45%;
+    --primary-foreground: 185 40% 98%;
+
+    --brand: 190 60% 35%;
+    --brand-foreground: 185 40% 98%;
 
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
@@ -62,12 +79,19 @@
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 62.8% 30.6%;
+    --success: 154 55% 42%;
+    --success-soft: 154 30% 14%;
+    --warning: 38 75% 48%;
+    --warning-soft: 40 35% 14%;
+    --info-soft: 190 30% 12%;
+    --info-border: 190 30% 20%;
+
+    --destructive: 4 51% 42%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --ring: 187 55% 45%;
   }
 }
 
