@@ -33,6 +33,3 @@ next-env.d.ts
 
 # TypeScript
 *.tsbuildinfo
-
-# Drizzle — keep migrations in git, but ignore the local journal
-drizzle/meta/_journal.json
