@@ -15,10 +15,10 @@ export default async function OnboardingPage({
   // Already onboarded (incl. backfilled pre-Phase-7 users) → straight to
   // the workspace; profile edits live in Settings. Phase 11's re-run for a
   // newly formed company will revisit this.
-  const { company } = await requireCompany();
+  const { userId, company } = await requireCompany();
   if (isOnboarded(company)) {
     redirect(`/${locale}/dashboard`);
   }
 
-  return <OnboardingWizard />;
+  return <OnboardingWizard userId={userId} />;
 }

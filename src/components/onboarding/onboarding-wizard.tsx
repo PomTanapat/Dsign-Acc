@@ -23,7 +23,9 @@ import { Button } from "@/components/ui/button";
 import { usePathname, useRouter } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 
-const DRAFT_KEY = "dsign_onboarding_v1";
+// Scoped per user: on a shared device, one account must never resume
+// another account's half-finished answers.
+const DRAFT_KEY_PREFIX = "dsign_onboarding_v1";
 
 // A draft younger than this is a mid-flight locale flip (selecting
 // "foreign" remounts the page under /en) — restore silently. Older drafts
@@ -37,9 +39,9 @@ type Draft = {
   savedAt: number;
 };
 
-function readDraft(): Draft | null {
+function readDraft(key: string): Draft | null {
   try {
-    const raw = localStorage.getItem(DRAFT_KEY);
+    const raw = localStorage.getItem(key);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Partial<Draft>;
     const ans = sanitizeAnswers(parsed.ans);
@@ -72,7 +74,8 @@ function firstUnansweredId(
   return (list.find((q) => !isAnswered(q, ans)) ?? list[list.length - 1]).id;
 }
 
-export function OnboardingWizard() {
+export function OnboardingWizard({ userId }: { userId: string }) {
+  const draftKey = `${DRAFT_KEY_PREFIX}:${userId}`;
   const t = useTranslations("Onboarding");
   const ti = useTranslations("Industries");
   const locale = useLocale();
@@ -88,7 +91,7 @@ export function OnboardingWizard() {
 
   // ---- draft restore / resume offer ----
   useEffect(() => {
-    const draft = readDraft();
+    const draft = readDraft(draftKey);
     if (draft) {
       if (Date.now() - draft.savedAt < SILENT_RESTORE_MS) {
         setAns(draft.ans);
@@ -98,18 +101,18 @@ export function OnboardingWizard() {
       }
     }
     setHydrated(true);
-  }, []);
+  }, [draftKey]);
 
   // ---- draft persist ----
   useEffect(() => {
     if (!hydrated || done || Object.keys(ans).length === 0) return;
     const draft: Draft = { version: 1, currentId, ans, savedAt: Date.now() };
     try {
-      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+      localStorage.setItem(draftKey, JSON.stringify(draft));
     } catch {
       // localStorage unavailable → resume support degrades, nothing breaks
     }
-  }, [ans, currentId, hydrated, done]);
+  }, [ans, currentId, hydrated, done, draftKey]);
 
   const questions = buildQuestionList(ans);
   const safeId = questions.some((q) => q.id === currentId)
@@ -154,7 +157,7 @@ export function OnboardingWizard() {
           savedAt: Date.now(),
         };
         try {
-          localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+          localStorage.setItem(draftKey, JSON.stringify(draft));
         } catch {}
         window.setTimeout(
           () => router.replace(pathname, { locale: target }),
@@ -174,7 +177,7 @@ export function OnboardingWizard() {
       const res = await skipOnboarding();
       if (res.success) {
         try {
-          localStorage.removeItem(DRAFT_KEY);
+          localStorage.removeItem(draftKey);
         } catch {}
         router.replace("/dashboard");
       }
@@ -190,7 +193,7 @@ export function OnboardingWizard() {
         onBack={() => setDone(false)}
         clearDraft={() => {
           try {
-            localStorage.removeItem(DRAFT_KEY);
+            localStorage.removeItem(draftKey);
           } catch {}
         }}
       />
@@ -225,7 +228,7 @@ export function OnboardingWizard() {
               className="flex-1"
               onClick={() => {
                 try {
-                  localStorage.removeItem(DRAFT_KEY);
+                  localStorage.removeItem(draftKey);
                 } catch {}
                 setResumeOffer(null);
               }}
