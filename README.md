@@ -36,6 +36,9 @@ App runs at `http://localhost:3000` and redirects to `/th` by default.
 | `AUTH_GOOGLE_SECRET` | optional | Google OAuth client secret |
 | `RESEND_API_KEY` | later | Used from Phase 5 onwards |
 | `EMAIL_FROM` | later | Sender identity for Resend |
+| `TALK_TO_US_EMAIL` | prod | Firm inbox for "Talk to us" leads |
+| `CRON_SECRET` | prod | Bearer secret for `/api/cron/leads-digest`; unset disables it |
+| `NEXT_PUBLIC_SHOW_DRAFT_BADGES` | optional | `true` shows "draft — pending CPA review" badges; read at server start |
 
 ## Scripts
 
@@ -47,6 +50,7 @@ App runs at `http://localhost:3000` and redirects to `/th` by default.
 | `npm run lint` | ESLint |
 | `npm run db:generate` | Generate Drizzle migration SQL |
 | `npm run db:migrate` | Apply migrations |
+| `npm run db:migrate:deploy` | Production migrator (`scripts/migrate.mjs`); reads `DATABASE_URL` from the shell, not `.env.local` |
 | `npm run db:push` | Push schema directly (dev convenience) |
 | `npm run db:studio` | Drizzle Studio UI |
 
@@ -54,8 +58,11 @@ App runs at `http://localhost:3000` and redirects to `/th` by default.
 
 1. Create a Railway project, attach a Postgres plugin.
 2. Set the env vars from the table above in the Railway service.
-3. Push this repo — Railway picks up `railway.json` and runs `npm run build`, then `npm start`.
-4. Run `npm run db:push` once against the production database, or wire it into a release step.
+3. Push this repo — Railway picks up `railway.json`, runs `npm run build`, then starts with
+   `npm run db:migrate:deploy && npm start`, so migrations apply on every deploy before boot.
+   Never run `db:push` against production.
+4. Schedule a daily `GET /api/cron/leads-digest` with `Authorization: Bearer $CRON_SECRET`
+   (see `docs/specs/phase-7-qa-checklist.md` section E).
 
 ## Project layout
 
