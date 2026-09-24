@@ -29,6 +29,9 @@ import type { DocType, DocumentRow } from "@/lib/db/schema";
 type Props = {
   type: DocType;
   documents: DocumentRow[];
+  /** This list is the user's industry-primary document type — its empty
+      state gets the encouraging "your main document" line (Pillar C). */
+  isPrimary?: boolean;
 };
 
 const STATUS_CLASSES: Record<string, string> = {
@@ -47,7 +50,7 @@ function fmt(n: string | number): string {
 
 type StatusFilter = "all" | "issued" | "void" | "paid" | "draft";
 
-export function DocumentsClient({ type, documents }: Props) {
+export function DocumentsClient({ type, documents, isPrimary }: Props) {
   const t = useTranslations(
     type === "quotation"
       ? "Quotations"
@@ -102,6 +105,11 @@ export function DocumentsClient({ type, documents }: Props) {
       {documents.length === 0 ? (
         <div className="rounded-lg border bg-background p-12 text-center">
           <p className="text-sm text-muted-foreground">{t("empty")}</p>
+          {isPrimary ? (
+            <p className="mt-1 text-sm text-primary">
+              {tDoc("emptyPrimaryHint")}
+            </p>
+          ) : null}
         </div>
       ) : (
         <>

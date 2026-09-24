@@ -1,7 +1,6 @@
 /**
- * Vitest-shaped test cases for `calc.ts`. Vitest is intentionally NOT
- * installed in this phase — these tests are documentation of the expected
- * arithmetic. A reviewer can `npm i -D vitest` and `npx vitest` to run them.
+ * Test cases for `calc.ts`. Run with `npm test` (Vitest installed in
+ * Phase 7).
  */
 import { describe, it, expect } from "vitest";
 import { calculateLineTotal, calculateDocument, round2 } from "./calc";

@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { PitForm } from "@/components/forms/pit-form";
+import { requireOnboarded } from "@/lib/queries/company";
 
 export default async function Page({
   params,
@@ -9,6 +10,7 @@ export default async function Page({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  await requireOnboarded(locale);
   const t = await getTranslations({ locale, namespace: "PitForm" });
 
   return (

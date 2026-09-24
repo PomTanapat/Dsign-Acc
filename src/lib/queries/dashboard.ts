@@ -1,10 +1,27 @@
 import "server-only";
 
-import { and, desc, eq, gte, lt, ne } from "drizzle-orm";
+import { and, count, desc, eq, gte, lt, ne } from "drizzle-orm";
 
 import { db } from "@/lib/db";
-import { documents, whtCertificates, type DocType } from "@/lib/db/schema";
+import {
+  customers,
+  documents,
+  whtCertificates,
+  type DocType,
+} from "@/lib/db/schema";
 import { requireCompany } from "./company";
+
+function monthBoundsIso(): { startIso: string; endIso: string } {
+  const now = new Date();
+  const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+  const end = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1),
+  );
+  return {
+    startIso: start.toISOString().slice(0, 10),
+    endIso: end.toISOString().slice(0, 10),
+  };
+}
 
 export type DashboardStats = {
   invoicesCount: number;
@@ -100,6 +117,122 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     whtWithheld,
     outstanding,
   };
+}
+
+// -------------------- Phase 7: industry-tailored KPIs --------------------
+
+export type TailoredStats = {
+  /** Sum of non-void receipts issued this month — the "billing" KPI.
+      The pre-Phase-7 aggregates were invoice-only; receipt-primary
+      industries (online/food/salon) would otherwise read ฿0 forever. */
+  receiptsCollectedThisMonth: number;
+  /** Count of all documents (every type) issued this month. */
+  documentsThisMonth: number;
+  /** Issued quotations — the "projects" emphasis proxy (no projects entity
+      exists; "active projects" from the prototype is unimplementable). */
+  openQuotations: number;
+};
+
+export async function getTailoredStats(): Promise<TailoredStats> {
+  const { company } = await requireCompany();
+  if (!company) {
+    return {
+      receiptsCollectedThisMonth: 0,
+      documentsThisMonth: 0,
+      openQuotations: 0,
+    };
+  }
+  const { startIso, endIso } = monthBoundsIso();
+
+  const [receiptRows, [docCount], [quoCount]] = await Promise.all([
+    db
+      .select({ total: documents.total })
+      .from(documents)
+      .where(
+        and(
+          eq(documents.companyId, company.id),
+          eq(documents.type, "receipt"),
+          ne(documents.status, "void"),
+          gte(documents.issueDate, startIso),
+          lt(documents.issueDate, endIso),
+        ),
+      ),
+    db
+      .select({ value: count() })
+      .from(documents)
+      .where(
+        and(
+          eq(documents.companyId, company.id),
+          ne(documents.status, "void"),
+          gte(documents.issueDate, startIso),
+          lt(documents.issueDate, endIso),
+        ),
+      ),
+    db
+      .select({ value: count() })
+      .from(documents)
+      .where(
+        and(
+          eq(documents.companyId, company.id),
+          eq(documents.type, "quotation"),
+          eq(documents.status, "issued"),
+        ),
+      ),
+  ]);
+
+  return {
+    receiptsCollectedThisMonth: receiptRows.reduce(
+      (s, r) => s + Number(r.total),
+      0,
+    ),
+    documentsThisMonth: Number(docCount?.value ?? 0),
+    openQuotations: Number(quoCount?.value ?? 0),
+  };
+}
+
+export type WorkspaceCounts = {
+  quotation: number;
+  invoice: number;
+  receipt: number;
+  wht: number;
+  customers: number;
+};
+
+/**
+ * Lifetime counts feeding the sidebar's never-hide override (plan D8) and
+ * the first-task card's real-data completion (a document exists / a
+ * customer exists). One grouped query + two counts — cheap per request.
+ */
+export async function getWorkspaceCounts(): Promise<WorkspaceCounts> {
+  const { company } = await requireCompany();
+  if (!company) {
+    return { quotation: 0, invoice: 0, receipt: 0, wht: 0, customers: 0 };
+  }
+
+  const [byType, [whtRow], [custRow]] = await Promise.all([
+    db
+      .select({ type: documents.type, value: count() })
+      .from(documents)
+      .where(eq(documents.companyId, company.id))
+      .groupBy(documents.type),
+    db
+      .select({ value: count() })
+      .from(whtCertificates)
+      .where(eq(whtCertificates.companyId, company.id)),
+    db
+      .select({ value: count() })
+      .from(customers)
+      .where(eq(customers.companyId, company.id)),
+  ]);
+
+  const counts = { quotation: 0, invoice: 0, receipt: 0, wht: 0, customers: 0 };
+  for (const r of byType) {
+    if (r.type === "quotation" || r.type === "invoice" || r.type === "receipt")
+      counts[r.type] = Number(r.value);
+  }
+  counts.wht = Number(whtRow?.value ?? 0);
+  counts.customers = Number(custRow?.value ?? 0);
+  return counts;
 }
 
 // -------------------- Phase 5: dashboard widgets --------------------

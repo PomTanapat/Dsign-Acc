@@ -12,7 +12,7 @@ import {
   type DocumentRow,
   type DocumentLineRow,
 } from "@/lib/db/schema";
-import { requireCompany } from "@/lib/queries/company";
+import { isLegalComplete, requireCompany } from "@/lib/queries/company";
 import { documentInputSchema } from "@/lib/validation/document";
 import { calculateDocument } from "@/lib/documents/calc";
 import { nextRunningNumber } from "@/lib/documents/numbering";
@@ -64,6 +64,11 @@ export async function createDocument(input: unknown): Promise<
 > {
   const { company } = await requireCompany();
   if (!company) return { success: false, error: "noCompany" };
+  // Issuing needs the legal identity on the document — name, TIN, address.
+  // (Phase 7: onboarding can finish before these exist.)
+  if (!isLegalComplete(company)) {
+    return { success: false, error: "companyIncomplete" };
+  }
 
   const parsed = documentInputSchema.safeParse(input);
   if (!parsed.success) {
@@ -88,6 +93,14 @@ export async function createDocument(input: unknown): Promise<
   if (!customer) return { success: false, error: "customerNotFound" };
 
   const { computedLines, totals } = calculateDocument(data.lines, data.whtRate);
+
+  // Plan D10 — the real "can't issue an invalid doc" guarantee (the client
+  // confirm dialog is bypassable). Issuing a document that charges VAT
+  // without VAT registration is unlawful; "unsure" blocks too — the safe
+  // default routes to help, not to a maybe-illegal document.
+  if (totals.vatAmount > 0 && company.vatRegistered !== "yes") {
+    return { success: false, error: "vatNotRegistered" };
+  }
 
   // Snapshots — frozen at issuance so the PDF stays reproducible.
   const customerSnapshot: CustomerSnapshot = {

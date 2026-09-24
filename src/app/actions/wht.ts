@@ -11,7 +11,7 @@ import {
   type WhtCertificateRow,
   type WhtIncomeLine,
 } from "@/lib/db/schema";
-import { requireCompany } from "@/lib/queries/company";
+import { isLegalComplete, requireCompany } from "@/lib/queries/company";
 import { whtCertificateInputSchema } from "@/lib/validation/wht";
 import { calculateWhtLine, calculateWhtTotals } from "@/lib/documents/wht-calc";
 import { nextRunningNumber } from "@/lib/documents/numbering";
@@ -54,6 +54,11 @@ export async function createWhtCertificate(
 ): Promise<ActionResult<{ certificateId: string }>> {
   const { company } = await requireCompany();
   if (!company) return { success: false, error: "noCompany" };
+  // Issuing needs the legal identity on the certificate — name, TIN, address.
+  // (Phase 7: onboarding can finish before these exist.)
+  if (!isLegalComplete(company)) {
+    return { success: false, error: "companyIncomplete" };
+  }
 
   const parsed = whtCertificateInputSchema.safeParse(input);
   if (!parsed.success) {

@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Explainer } from "@/components/guidance/explainer";
 import { createItem, updateItem } from "@/app/actions/items";
 import { itemSchema } from "@/lib/validation/item";
 import type { Item } from "@/lib/db/schema";
@@ -160,6 +161,7 @@ export function ItemForm({ initialValues, onSuccess, onCancel }: Props) {
             <option value="3.00">3%</option>
             <option value="5.00">5%</option>
           </select>
+          <Explainer term="whtIssued" compact />
         </Field>
         <div className="space-y-2">
           <div className="flex items-center gap-2 pt-7">
@@ -174,6 +176,7 @@ export function ItemForm({ initialValues, onSuccess, onCancel }: Props) {
               {t("fields.vatApplicable")}
             </Label>
           </div>
+          <Explainer term="vat" compact />
           <div className="flex items-center gap-2">
             <Checkbox
               id="isActive"
@@ -214,6 +217,7 @@ function Field({
   hint?: string;
   children: React.ReactNode;
 }) {
+  const tv = useTranslations("Validation");
   return (
     <div className="space-y-1.5">
       <Label htmlFor={id}>
@@ -224,7 +228,11 @@ function Field({
       {hint && !error && (
         <p className="text-xs text-muted-foreground">{hint}</p>
       )}
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && (
+        <p className="text-xs text-destructive">
+          {tv.has(error) ? tv(error) : error}
+        </p>
+      )}
     </div>
   );
 }

@@ -18,6 +18,8 @@ const PROTECTED_SEGMENTS = [
   "customers",
   "items",
   "settings",
+  "onboarding",
+  "glossary",
 ];
 
 // Auth.js v5 cookie names — checked in order; first hit wins.
@@ -39,8 +41,10 @@ function stripLocale(pathname: string) {
 export default function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Let Auth.js handle its own routes.
-  if (pathname.startsWith("/api/auth")) return NextResponse.next();
+  // API routes are never locale-prefixed and authenticate themselves
+  // (Auth.js, PDF downloads, cron). Letting next-intl see them redirects
+  // /api/pdf/x to /th/api/pdf/x, which 404s.
+  if (pathname.startsWith("/api/")) return NextResponse.next();
 
   const { locale, rest } = stripLocale(pathname);
   const firstSegment = rest.split("/")[0] ?? "";

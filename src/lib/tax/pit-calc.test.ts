@@ -1,7 +1,6 @@
 /**
- * Vitest-shaped tests for the PIT calculator. Vitest is intentionally not
- * installed at this phase — these tests document expected arithmetic.
- * `npm i -D vitest && npx vitest` to run them.
+ * Tests for the PIT calculator. Run with `npm test` (Vitest installed in
+ * Phase 7).
  */
 import { describe, it, expect } from "vitest";
 
@@ -29,7 +28,14 @@ describe("calculatePIT (bracket walk)", () => {
   it("returns zero tax below the first taxable bracket", () => {
     const r = calculatePIT(150_000);
     expect(r.totalTax).toBe(0);
-    expect(r.bracketResults).toEqual([]);
+    // The 0% bracket is included — the UI renders the full breakdown,
+    // "0–150k (0%) ฿0" first.
+    expect(r.bracketResults).toHaveLength(1);
+    expect(r.bracketResults[0]).toMatchObject({
+      rate: 0,
+      taxableInBracket: 150_000,
+      taxInBracket: 0,
+    });
   });
 
   it("applies 5% in the second bracket only", () => {
@@ -44,7 +50,8 @@ describe("calculatePIT (bracket walk)", () => {
     //   + 2m-5m 30% (900,000) + 5m-6m 35% (350,000) = 1,615,000.
     const r = calculatePIT(6_000_000);
     expect(r.totalTax).toBe(1_615_000);
-    expect(r.bracketResults).toHaveLength(7);
+    // All 8 brackets touched, including the 0% one (rendered in the UI).
+    expect(r.bracketResults).toHaveLength(8);
   });
 });
 

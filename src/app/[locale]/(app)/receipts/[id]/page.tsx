@@ -1,9 +1,9 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 
 import { DocumentDetailClient } from "@/components/app/document-detail-client";
 import { getDocument } from "@/app/actions/documents";
-import { requireCompany } from "@/lib/queries/company";
+import { requireOnboarded } from "@/lib/queries/company";
 
 export default async function Page({
   params,
@@ -12,8 +12,7 @@ export default async function Page({
 }) {
   const { locale, id } = await params;
   setRequestLocale(locale);
-  const { company } = await requireCompany();
-  if (!company) redirect(`/${locale}/settings?onboarding=1`);
+  await requireOnboarded(locale);
 
   const data = await getDocument(id);
   if (!data || data.document.type !== "receipt") notFound();

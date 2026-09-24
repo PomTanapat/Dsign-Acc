@@ -4,7 +4,7 @@ import { setRequestLocale, getTranslations } from "next-intl/server";
 
 import { WhtForm, type InvoicePrefill } from "@/components/forms/wht-form";
 import { getCustomers } from "@/app/actions/customers";
-import { requireCompany } from "@/lib/queries/company";
+import { isLegalComplete, requireOnboarded } from "@/lib/queries/company";
 import { db } from "@/lib/db";
 import { documents } from "@/lib/db/schema";
 import type { CustomerSnapshot } from "@/lib/documents/types";
@@ -19,8 +19,9 @@ export default async function Page({
   const { locale } = await params;
   const { fromInvoice } = await searchParams;
   setRequestLocale(locale);
-  const { company } = await requireCompany();
-  if (!company) redirect(`/${locale}/settings?onboarding=1`);
+  const { company } = await requireOnboarded(locale);
+  // Issuing needs the company's legal identity — finish it in Settings first.
+  if (!isLegalComplete(company)) redirect(`/${locale}/settings?onboarding=1`);
 
   const t = await getTranslations("Wht");
   const customers = await getCustomers();

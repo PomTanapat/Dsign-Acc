@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Explainer } from "@/components/guidance/explainer";
 import {
   createCustomer,
   updateCustomer,
@@ -102,15 +103,18 @@ export function CustomerForm({ initialValues, onSuccess, onCancel }: Props) {
         </Alert>
       )}
 
-      <div className="flex items-center gap-2">
-        <Checkbox
-          id="isJuristic"
-          checked={isJuristic}
-          onCheckedChange={(v) => form.setValue("isJuristic", v === true)}
-        />
-        <Label htmlFor="isJuristic" className="cursor-pointer">
-          {t("fields.isJuristic")}
-        </Label>
+      <div>
+        <div className="flex items-center gap-2">
+          <Checkbox
+            id="isJuristic"
+            checked={isJuristic}
+            onCheckedChange={(v) => form.setValue("isJuristic", v === true)}
+          />
+          <Label htmlFor="isJuristic" className="cursor-pointer">
+            {t("fields.isJuristic")}
+          </Label>
+        </div>
+        <Explainer term="juristic" />
       </div>
 
       <Field
@@ -200,6 +204,7 @@ function Field({
   hint?: string;
   children: React.ReactNode;
 }) {
+  const tv = useTranslations("Validation");
   return (
     <div className="space-y-1.5">
       <Label htmlFor={id}>
@@ -210,7 +215,11 @@ function Field({
       {hint && !error && (
         <p className="text-xs text-muted-foreground">{hint}</p>
       )}
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && (
+        <p className="text-xs text-destructive">
+          {tv.has(error) ? tv(error) : error}
+        </p>
+      )}
     </div>
   );
 }

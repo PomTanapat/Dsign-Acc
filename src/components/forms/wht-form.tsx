@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Explainer } from "@/components/guidance/explainer";
 import { useRouter } from "@/i18n/routing";
 import { createWhtCertificate } from "@/app/actions/wht";
 import { calculateWhtLine, calculateWhtTotals } from "@/lib/documents/wht-calc";
@@ -152,7 +153,9 @@ export function WhtForm({ customers, prefill, locale }: Props) {
   }, [watchedCustomerId, customers, setValue]);
 
   // Live totals — cheap to recompute on every keystroke.
-  const liveTotals = useMemo(() => {
+  // Not memoised: watch() returns react-hook-form's live array, mutated in
+  // place on every edit, so a memo keyed on it would never recompute.
+  const liveTotals = (() => {
     const lines = watchedLines.map((l) => {
       const gross = num(l.grossAmount);
       const rate = num(l.rate);
@@ -167,7 +170,7 @@ export function WhtForm({ customers, prefill, locale }: Props) {
       };
     });
     return { lines, totals: calculateWhtTotals(lines) };
-  }, [watchedLines]);
+  })();
 
   function onCodeChange(idx: number, code: WhtIncomeTypeCode) {
     setValue(`lines.${idx}.code`, code);
@@ -231,7 +234,9 @@ export function WhtForm({ customers, prefill, locale }: Props) {
           "noCompany",
           "validation",
         ] as const;
-        const key = res.error as (typeof known)[number] | undefined;
+        const key = res.success
+          ? undefined
+          : (res.error as (typeof known)[number] | undefined);
         setFormError(
           key && (known as readonly string[]).includes(key)
             ? t(`errors.${key}`)
@@ -269,6 +274,7 @@ export function WhtForm({ customers, prefill, locale }: Props) {
               ))}
             </SelectContent>
           </Select>
+          <Explainer term="juristic" compact />
         </div>
 
         <div className="space-y-1.5">
@@ -302,6 +308,7 @@ export function WhtForm({ customers, prefill, locale }: Props) {
               {t("formTypePnd53")}
             </label>
           </div>
+          <Explainer term="whtIssued" />
         </div>
       </div>
 

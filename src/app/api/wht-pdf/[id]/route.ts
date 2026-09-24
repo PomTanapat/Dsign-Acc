@@ -63,7 +63,9 @@ export async function GET(
 
   const pdfBuffer = await renderWhtPdfBuffer(data);
 
-  return new NextResponse(pdfBuffer, {
+  // Re-wrap: newer @types/node type Buffer over ArrayBufferLike, which no
+  // longer satisfies BodyInit; a plain Uint8Array copy does.
+  return new NextResponse(new Uint8Array(pdfBuffer), {
     headers: {
       "Content-Type": "application/pdf",
       "Content-Disposition": `inline; filename="${cert.runningNumber}.pdf"`,

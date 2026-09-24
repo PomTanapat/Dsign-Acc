@@ -1,8 +1,10 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { BusinessProfileForm } from "@/components/forms/business-profile-form";
 import { CompanyForm } from "@/components/forms/company-form";
-import { requireCompany } from "@/lib/queries/company";
+import { requireOnboarded } from "@/lib/queries/company";
+import { getWorkspaceCounts } from "@/lib/queries/dashboard";
 
 export default async function Page({
   params,
@@ -13,11 +15,19 @@ export default async function Page({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const { company } = await requireOnboarded(locale);
   const t = await getTranslations("Settings");
 
-  const { company } = await requireCompany();
   const { onboarding } = await searchParams;
-  const showOnboardingBanner = onboarding === "1" || company === null;
+  // requireOnboarded guarantees a company row, so the banner is driven by the
+  // ?onboarding=1 flag alone (legal-completion nudge from the issuing pages).
+  const showOnboardingBanner = onboarding === "1";
+
+  // "You seem comfortable — switch to Fast?" only after real usage
+  // (≥5 issued documents), never as a day-one nag.
+  const counts = await getWorkspaceCounts();
+  const issuedCount =
+    counts.quotation + counts.invoice + counts.receipt + counts.wht;
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
@@ -31,6 +41,16 @@ export default async function Page({
           <AlertDescription>{t("onboardingBanner")}</AlertDescription>
         </Alert>
       )}
+
+      <div className="rounded-lg border bg-background p-6">
+        <BusinessProfileForm
+          industry={company.industry}
+          vatRegistered={company.vatRegistered}
+          paysOthers={company.paysOthers}
+          guidanceMode={company.guidanceMode}
+          suggestFast={issuedCount >= 5}
+        />
+      </div>
 
       <div className="rounded-lg border bg-background p-6">
         <CompanyForm initialValues={company} />
