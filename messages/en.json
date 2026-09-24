@@ -978,5 +978,13 @@
     "contractor": { "label": "Contractor / events" },
     "salon": { "label": "Salon / beauty" },
     "other": { "label": "Other / not sure" }
+  },
+  "Validation": {
+    "required": "This field is required.",
+    "invalidTin": "Tax ID must be exactly 13 digits.",
+    "invalidBranchCode": "Branch code must be 5 digits (head office = 00000).",
+    "invalidEmail": "That doesn't look like a valid email address.",
+    "invalidUrl": "Link must start with http:// or https://.",
+    "invalidNumber": "Enter a number (up to 2 decimal places)."
   }
 }

@@ -256,6 +256,7 @@ function Field({
   hint?: string;
   children: React.ReactNode;
 }) {
+  const tv = useTranslations("Validation");
   return (
     <div className="space-y-1.5">
       <Label htmlFor={id}>
@@ -266,7 +267,11 @@ function Field({
       {hint && !error && (
         <p className="text-xs text-muted-foreground">{hint}</p>
       )}
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && (
+        <p className="text-xs text-destructive">
+          {tv.has(error) ? tv(error) : error}
+        </p>
+      )}
     </div>
   );
 }
