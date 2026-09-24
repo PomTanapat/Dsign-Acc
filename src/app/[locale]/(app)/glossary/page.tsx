@@ -13,10 +13,13 @@ import { TalkLink } from "@/components/guidance/talk-link";
 
 export default async function GlossaryPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ foreign?: string }>;
 }) {
   const { locale } = await params;
+  const { foreign: foreignParam } = await searchParams;
   setRequestLocale(locale);
 
   const t = await getTranslations("Glossary");
@@ -25,7 +28,8 @@ export default async function GlossaryPage({
 
   const core = GLOSSARY_KEYS.filter((k) => !GLOSSARY[k].foreign);
   const foreign = GLOSSARY_KEYS.filter((k) => GLOSSARY[k].foreign);
-  const showForeign = company?.foreignOwned ?? false;
+  // Wizard deep links to foreign terms arrive before foreignOwned is saved.
+  const showForeign = (company?.foreignOwned ?? false) || foreignParam === "1";
 
   function Card({ termKey }: { termKey: GlossaryTermKey }) {
     const g = GLOSSARY[termKey];

@@ -175,7 +175,7 @@ function ExplainerLinks({
     <div className="mt-2 flex items-center gap-3 text-[12.5px]">
       {entry.more ? (
         <Link
-          href={`/glossary#${term}`}
+          href={`/glossary${GLOSSARY[term].foreign ? "?foreign=1" : ""}#${term}`}
           className="inline-flex items-center gap-1 font-medium text-primary hover:underline"
         >
           <BookOpen className="h-3 w-3" />
