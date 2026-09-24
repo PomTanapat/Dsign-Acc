@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { useForm, useFieldArray, type Resolver } from "react-hook-form";
 import { Hash, Percent, Plus, Scissors, ShieldCheck, Trash2 } from "lucide-react";
@@ -156,7 +156,9 @@ export function DocumentForm({
   const watchedCustomerId = watch("customerId");
 
   // Live totals — recompute on every render. Cheap for handful of lines.
-  const liveTotals = useMemo(() => {
+  // Not memoised: watch() returns react-hook-form's live array, mutated in
+  // place on every edit, so a memo keyed on it would never recompute.
+  const liveTotals = (() => {
     const parsed = watchedLines.map((l, i) => ({
       sortOrder: i,
       itemId: l.itemId,
@@ -168,7 +170,7 @@ export function DocumentForm({
     }));
     const whtRate = num(watchedWht);
     return calculateDocument(parsed, whtRate || null);
-  }, [watchedLines, watchedWht]);
+  })();
 
   const selectedCustomer = customers.find((c) => c.id === watchedCustomerId);
   const isServiceIndustry = SERVICE_INDUSTRIES.includes(industry);

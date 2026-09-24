@@ -153,7 +153,9 @@ export function WhtForm({ customers, prefill, locale }: Props) {
   }, [watchedCustomerId, customers, setValue]);
 
   // Live totals — cheap to recompute on every keystroke.
-  const liveTotals = useMemo(() => {
+  // Not memoised: watch() returns react-hook-form's live array, mutated in
+  // place on every edit, so a memo keyed on it would never recompute.
+  const liveTotals = (() => {
     const lines = watchedLines.map((l) => {
       const gross = num(l.grossAmount);
       const rate = num(l.rate);
@@ -168,7 +170,7 @@ export function WhtForm({ customers, prefill, locale }: Props) {
       };
     });
     return { lines, totals: calculateWhtTotals(lines) };
-  }, [watchedLines]);
+  })();
 
   function onCodeChange(idx: number, code: WhtIncomeTypeCode) {
     setValue(`lines.${idx}.code`, code);
